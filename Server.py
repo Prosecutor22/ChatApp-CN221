@@ -29,11 +29,10 @@ class Server:
         return: list[username, password, IP, status]
         '''
         if username in self.df.index:
-            # res = [username]
-            # for i in list(self.df.loc([[username]]).values[0]):
-            #     res.append(i)
-            # return res
-            return [username,username]
+            res = [username]
+            for i in self.df.loc[[username]].values[0]:
+                res.append(i)
+            return res
         else:
             return None
     
@@ -50,7 +49,7 @@ class Server:
         with open(self.fileNameClient, 'a+', newline='') as csvfile:
             csvwriter = csv.writer(csvfile)
             csvwriter.writerow(userData)   
-        #self.df.append(pd.DataFrame({'password': [password], 'IP': [None], 'Status': [0]}), index=username)    
+        self.df = self.df.append(pd.DataFrame({'password': [password], 'IP': [None], 'Status': [0]}, index=[username]))    
         return 1  
       
     def authenticate(self, username: str, password: str) -> int:
