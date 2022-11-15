@@ -86,6 +86,7 @@ class Server:
                 connected = False
             else:
                 msg = json.loads(msg)
+                print(f'[MESSAGE FROM {addr}] {msg}')
                 response = self.processMessage(msg)
                 conn.send(response.encode(FORMAT))
         print(f"[END CONNECTION] {addr} disconnected.")
@@ -95,7 +96,7 @@ class Server:
         while True:
             (conn, addr) = self.server.accept()
             thread = threading.Thread(target=self.handle_client, args=(conn,addr))
-            thread.run()
+            thread.start()
 
     def processAPMessage(self, msg):
         '''
@@ -122,7 +123,6 @@ class Server:
         msg: object(pro, ...)
         return: str_en(...)
         '''
-        print(msg)
         if msg['pro'] == "AP":
             return self.processAPMessage(msg)
         elif msg['pro'] == "SCP":

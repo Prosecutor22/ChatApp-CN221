@@ -93,6 +93,8 @@ class Client:
                 break
             else:
                 print('[INFO] Sign in fail')
+        self.client.send(DISCONNECT_MESSAGE.encode(FORMAT))
+        self.client.close()
 
         
 
