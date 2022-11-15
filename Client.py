@@ -5,7 +5,6 @@ import json
 import pandas as pd
 
 FORMAT = 'utf-8'
-DISCONNECT_MESSAGE = "!DISCONNECT"
 
 class Client:
     def __init__(self, ip_address, port):
@@ -28,7 +27,7 @@ class Client:
             "password": password
         }
         msg = json.dumps(message)
-        return msg
+        return msg.encode(FORMAT)
         
 
     # def sendServer(self, msg):
@@ -71,7 +70,7 @@ class Client:
             username = input("Enter username: ")
             password = input("Enter password: ")
             msg = self.createAuthMessage(0, username, password)
-            self.client.send(msg.encode(FORMAT))
+            self.client.send(msg)
             rcv_msg = self.client.recv(2048).decode(FORMAT)
             rcv_msg = json.loads(rcv_msg)
             if rcv_msg['flag'] == 1:
@@ -84,7 +83,7 @@ class Client:
             username = input("Enter username: ")
             password = input("Enter password: ")
             msg = self.createAuthMessage(1, username, password)
-            self.client.send(msg.encode(FORMAT))
+            self.client.send(msg)
             rcv_msg = self.client.recv(2048).decode(FORMAT)
             rcv_msg = json.loads(rcv_msg)
             if rcv_msg['flag'] == 1:
@@ -93,7 +92,7 @@ class Client:
                 break
             else:
                 print('[INFO] Sign in fail')
-        self.client.send(DISCONNECT_MESSAGE.encode(FORMAT))
+        self.client.send(self.createAuthMessage(2, None, None))
         self.client.close()
 
         

@@ -79,16 +79,15 @@ class Server:
         '''
         print(f"[NEW CONNECTION] {addr} connected.")
         conn.send(b'[INFO] Connected')
-        connected = True
-        while connected:
+        while True:
             msg = conn.recv(2048).decode(FORMAT)
-            if msg == DISCONNECT_MESSAGE:
-                connected = False
-            else:
-                msg = json.loads(msg)
-                print(f'[MESSAGE FROM {addr}] {msg}')
-                response = self.processMessage(msg)
-                conn.send(response.encode(FORMAT))
+            msg = json.loads(msg)
+            print(f'[MESSAGE FROM {addr}] {msg}')
+            if msg["type"] == 2:
+                break
+            response = self.processMessage(msg)
+            conn.send(response.encode(FORMAT))
+                
         print(f"[END CONNECTION] {addr} disconnected.")
         conn.close()
     
