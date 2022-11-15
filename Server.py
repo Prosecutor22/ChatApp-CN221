@@ -23,7 +23,14 @@ class Server:
         self.df['IP'] = None
         self.df['Status'] = 0
 
+    def setUserStatus(self, username: str, status: int) -> int:
+        self.df.loc[username, 'Status'] = status
+        return 1
     
+    def setUserIP(self, username: str, IP: str) -> int:
+        self.df.loc[username, 'IP'] = IP
+        return 1
+
     def searchUserName(self, username: str) -> list:
         '''
         return: list[username, password, IP, status]
@@ -49,7 +56,7 @@ class Server:
         with open(self.fileNameClient, 'a+', newline='') as csvfile:
             csvwriter = csv.writer(csvfile)
             csvwriter.writerow(userData)   
-        self.df = self.df.append(pd.DataFrame({'password': [password], 'IP': [None], 'Status': [0]}, index=[username]))    
+        self.df = pd.concat([self.df, pd.DataFrame({'password': [password], 'IP': [None], 'Status': [0]}, index=[username])])    
         return 1  
       
     def authenticate(self, username: str, password: str) -> int:
@@ -61,6 +68,7 @@ class Server:
         user = self.searchUserName(username)
         if user == None or password != user[1]:
             return 0
+        
         return 1
     
     def get_listfriend(self, username):
@@ -111,10 +119,12 @@ class Server:
                 return json.dumps({"flag": 0, "data": None})
             else:
                 fri_list = self.get_listfriend(msg["username"])
+                self.setUserStatus(msg["username"], 1)
                 return json.dumps({"flag": res, "data": fri_list})
         else: 
             # logout
-            pass
+            res = self.setUserStatus(msg["username"], 0) & self.setUserIP(msg["username"], None)
+            return json.dumps({"flag": res, "data": None})
     
 
     def processMessage(self, msg):

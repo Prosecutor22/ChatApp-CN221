@@ -11,20 +11,13 @@ import pandas as pd
 
 # print(df)
 t = pd.read_csv('E:/HCMUT/HK_221/MANG_MAY_TINH/Ass1/ChatApp-CN221/Data/Server/clientData.csv', index_col='username')
+t['IP'] = None
+t['Status'] = 0
 # r = ['thinh']
 # for i in list(t.loc[['thinhlqh']].values[0]):
 #     r.append(i)
 # print(r)
-# t = t.append(pd.DataFrame({'password': ['i'], 'IP': [None], 'Status': [0]}, index=['ue']))
-# print(t)
-t['IP'] = None
-t['Status'] = 0
-username = 'thinhlqh'
-if username in t.index:
-    res = [username]
-    for i in t.loc[[username]].values[0]:
-        res.append(i)
-    print(res)
-
+t = pd.concat([t,pd.DataFrame({'password': ['i'], 'IP': [None], 'Status': [0]}, index=['ue'])])
+print(t)
 
 
