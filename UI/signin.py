@@ -70,6 +70,7 @@ class LoginPage:
 
         self.username_line = Canvas(self.lgn_frame, width=300, height=2.0, bg="#bdb9b1", highlightthickness=0)
         self.username_line.place(x=550, y=359)
+        self.username = StringVar()
         # ===== Username icon =========
         self.username_icon = Image.open('images\\username_icon.png')
         photo = ImageTk.PhotoImage(self.username_icon)
@@ -91,20 +92,15 @@ class LoginPage:
         # ========================================================================
         # ============================Forgot password=============================
         # ========================================================================
-        self.forgot_button = Button(self.lgn_frame, text="Forgot Password ?",
-                                    font=("yu gothic ui", 13, "bold underline"), fg="white", relief=FLAT,
-                                    activebackground="#040405"
-                                    , borderwidth=0, background="#040405", cursor="hand2")
-        self.forgot_button.place(x=630, y=510)
+    
         # =========== Sign Up ==================================================
         self.sign_label = Label(self.lgn_frame, text='No account yet?', font=("yu gothic ui", 11, "bold"),
                                 relief=FLAT, borderwidth=0, background="#040405", fg='white')
-        self.sign_label.place(x=550, y=560)
+        self.sign_label.place(x=550, y=540)
 
-        self.signup_img = ImageTk.PhotoImage(file='images\\register.png')
-        self.signup_button_label = Button(self.lgn_frame, image=self.signup_img, bg='#98a65d', cursor="hand2",
-                                          borderwidth=0, background="#040405", activebackground="#040405")
-        self.signup_button_label.place(x=670, y=555, width=111, height=35)
+        self.sign_in_button = Button(self.window, text="Sign up", font=("yu gothic ui", 13, "bold"), width=15, bd=0,
+                            bg='#3047ff', cursor='hand2', activebackground='#3047ff', fg='white')
+        self.sign_in_button.place(x=950, y=600)
 
         # ========================================================================
         # ============================password====================================
@@ -119,6 +115,7 @@ class LoginPage:
 
         self.password_line = Canvas(self.lgn_frame, width=300, height=2.0, bg="#bdb9b1", highlightthickness=0)
         self.password_line.place(x=550, y=440)
+        self.password = StringVar()
         # ======== Password icon ================
         self.password_icon = Image.open('images\\password_icon.png')
         photo = ImageTk.PhotoImage(self.password_icon)
