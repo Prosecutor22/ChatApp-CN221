@@ -18,7 +18,7 @@ class SignupPage:
         self.bg_panel = Label(self.window, image=photo)
         self.bg_panel.image = photo
         self.bg_panel.pack(fill='both', expand='yes')
-        # ====== Login Frame =========================
+        # ====== Sign up Frame =========================
         self.lgn_frame = Frame(self.window, bg='#040405', width=950, height=600)
         self.lgn_frame.place(x=200, y=70)
 
@@ -44,18 +44,18 @@ class SignupPage:
         # ========================================================================
         # ============ Sign In Image =============================================
         # ========================================================================
-        self.sign_in_image = Image.open('images\\hyy.png')
-        photo = ImageTk.PhotoImage(self.sign_in_image)
-        self.sign_in_image_label = Label(self.lgn_frame, image=photo, bg='#040405')
-        self.sign_in_image_label.image = photo
-        self.sign_in_image_label.place(x=620, y=130)
+        self.sign_up_image = Image.open('images\\hyy.png')
+        photo = ImageTk.PhotoImage(self.sign_up_image)
+        self.sign_up_image_label = Label(self.lgn_frame, image=photo, bg='#040405')
+        self.sign_up_image_label.image = photo
+        self.sign_up_image_label.place(x=620, y=130)
 
         # ========================================================================
         # ============ Sign In label =============================================
         # ========================================================================
-        self.sign_in_label = Label(self.lgn_frame, text="Sign Up", bg="#040405", fg="white",
+        self.sign_up_label = Label(self.lgn_frame, text="Sign Up", bg="#040405", fg="white",
                                     font=("yu gothic ui", 17, "bold"))
-        self.sign_in_label.place(x=650, y=240)
+        self.sign_up_label.place(x=650, y=240)
 
         # ========================================================================
         # ============================username====================================
@@ -85,13 +85,13 @@ class SignupPage:
         self.lgn_button_label = Label(self.lgn_frame, image=photo, bg='#040405')
         self.lgn_button_label.image = photo
         self.lgn_button_label.place(x=550, y=450)
-        self.login = Button(self.lgn_button_label, text='SIGNUP', font=("yu gothic ui", 13, "bold"), width=25, bd=0,
+        self.signup = Button(self.lgn_button_label, text='SIGNUP', font=("yu gothic ui", 13, "bold"), width=25, bd=0,
                             bg='#3047ff', cursor='hand2', activebackground='#3047ff', fg='white')
-        self.login.place(x=20, y=10)
+        self.signup.place(x=20, y=10)
         # =========== Sign Up ==================================================
-        self.sign_label = Label(self.lgn_frame, text='Already had an account?', font=("yu gothic ui", 11, "bold"),
+        self.sign_in_label = Label(self.lgn_frame, text='Already had an account?', font=("yu gothic ui", 11, "bold"),
                                 relief=FLAT, borderwidth=0, background="#040405", fg='white')
-        self.sign_label.place(x=550, y=540)
+        self.sign_in_label.place(x=550, y=540)
 
         self.sign_in_button = Button(self.window, text="Sign in", font=("yu gothic ui", 13, "bold"), width=15, bd=0,
                             bg='#3047ff', cursor='hand2', activebackground='#3047ff', fg='white')

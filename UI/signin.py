@@ -2,13 +2,13 @@ from tkinter import *
 from PIL import ImageTk, Image
 
 
-class LoginPage:
+class SigninPage:
     def __init__(self, window):
         self.window = window
         self.window.geometry('1166x718')
         self.window.resizable(0, 0)
         self.window.state('zoomed')
-        self.window.title('Login Page')
+        self.window.title('Signin Page')
 
         # ========================================================================
         # ============================background image============================
@@ -70,7 +70,6 @@ class LoginPage:
 
         self.username_line = Canvas(self.lgn_frame, width=300, height=2.0, bg="#bdb9b1", highlightthickness=0)
         self.username_line.place(x=550, y=359)
-        self.username = StringVar()
         # ===== Username icon =========
         self.username_icon = Image.open('images\\username_icon.png')
         photo = ImageTk.PhotoImage(self.username_icon)
@@ -86,21 +85,21 @@ class LoginPage:
         self.lgn_button_label = Label(self.lgn_frame, image=photo, bg='#040405')
         self.lgn_button_label.image = photo
         self.lgn_button_label.place(x=550, y=450)
-        self.login = Button(self.lgn_button_label, text='LOGIN', font=("yu gothic ui", 13, "bold"), width=25, bd=0,
+        self.sign_in_button = Button(self.lgn_button_label, text='SIGN IN', font=("yu gothic ui", 13, "bold"), width=25, bd=0,
                             bg='#3047ff', cursor='hand2', activebackground='#3047ff', fg='white')
-        self.login.place(x=20, y=10)
+        self.sign_in_button.place(x=20, y=10)
         # ========================================================================
         # ============================Forgot password=============================
         # ========================================================================
     
         # =========== Sign Up ==================================================
-        self.sign_label = Label(self.lgn_frame, text='No account yet?', font=("yu gothic ui", 11, "bold"),
+        self.sign_up_label = Label(self.lgn_frame, text='No account yet?', font=("yu gothic ui", 11, "bold"),
                                 relief=FLAT, borderwidth=0, background="#040405", fg='white')
-        self.sign_label.place(x=550, y=540)
+        self.sign_up_label.place(x=550, y=540)
 
-        self.sign_in_button = Button(self.window, text="Sign up", font=("yu gothic ui", 13, "bold"), width=15, bd=0,
+        self.sign_up_button = Button(self.window, text="Sign up", font=("yu gothic ui", 13, "bold"), width=15, bd=0,
                             bg='#3047ff', cursor='hand2', activebackground='#3047ff', fg='white')
-        self.sign_in_button.place(x=950, y=600)
+        self.sign_up_button.place(x=950, y=600)
 
         # ========================================================================
         # ============================password====================================
@@ -115,7 +114,6 @@ class LoginPage:
 
         self.password_line = Canvas(self.lgn_frame, width=300, height=2.0, bg="#bdb9b1", highlightthickness=0)
         self.password_line.place(x=550, y=440)
-        self.password = StringVar()
         # ======== Password icon ================
         self.password_icon = Image.open('images\\password_icon.png')
         photo = ImageTk.PhotoImage(self.password_icon)
@@ -151,9 +149,9 @@ class LoginPage:
 
 def page():
     window = Tk()
-    LoginPage(window)
+    SigninPage(window)
     window.mainloop()
 
 
-if __name__ == '__main__':
-    page()
+# if __name__ == '__main__':
+#     page()

@@ -12,7 +12,7 @@ class Client:
         self.client.connect((ip_address, port))
         self.msg = self.client.recv(2048).decode()
         print(self.msg)
-        self.friendList
+        self.friendList = []
         # self.sendServer(self.createAuthMessage(0, 'minhpp', 'minhpp'))
         
         # self.client.close()
@@ -45,12 +45,12 @@ class Client:
             print("Fail")
         elif obj['flag'] == 1:
             print("Success")
-            friendList = pd.DataFrame(list((obj.data).items()), columns = ['username', 'stt'])
-            friendList = friendList.set_index('username')
+            # self.friendList = pd.DataFrame(list((obj.data).items()), columns = ['username', 'stt'])
+            # self.friendList = self.friendList.set_index('username')
         elif obj['flag'] == 2:
             df = pd.DataFrame(list((obj.data).items()), columns = ['username', 'stt'])
             df = df.set_index('username')
-            friendList.loc[df.index[0], 'stt'] = df.stt[0]
+            self.friendList.loc[df.index[0], 'stt'] = df.stt[0]
         else:
             print("Message fault")
 
@@ -87,7 +87,7 @@ class Client:
         self.client.send(msg)
         while True: 
             rcv_msg = self.client.recv(2048).decode(FORMAT)
-            rcv_msg = json.loads(rcv_msg)
+            rcv_msg = eval(json.loads(rcv_msg))
             if rcv_msg['flag'] == 1:
                 print('[INFO] Sign in successfully')
                 print(f'[RESULT] {rcv_msg["data"]}')
@@ -96,7 +96,24 @@ class Client:
                 print('[INFO] Sign in fail')
         self.client.send(self.createAuthMessage(2, None, None))
         self.client.close()
+    
+    def sign_up(self, username, password):
+        msg = self.createAuthMessage(0, username, password)
+        self.client.send(msg)
+        rcv_msg = self.client.recv(2048).decode(FORMAT)
+        rcv_msg = json.loads(rcv_msg)
+        return rcv_msg
+    
+    def sign_in(self, username, password):
+        msg = self.createAuthMessage(1, username, password)
+        self.client.send(msg)
+        rcv_msg = self.client.recv(2048).decode(FORMAT)
+        rcv_msg = json.loads(rcv_msg)
+        return rcv_msg
 
+    def sign_out(self):
+        self.client.send(self.createAuthMessage(2, None, None))
+        self.client.close()
         
 
 if __name__ == "__main__":

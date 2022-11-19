@@ -72,11 +72,18 @@ class Server:
         return 1
     
     def get_listfriend(self, username):
+        '''
+        return: {'ban1': 1, 'ban2': 0} 
+        '''
         with open(self.filenameListFriend, "r") as f:
             for line in f:
                 tmp = line.split()
                 if tmp[0] == username:
-                    return [x for x in tmp[1].split(',')]
+                    tmp = [x for x in tmp[1].split(',')]
+                    res = {}
+                    for i in tmp:
+                        res[i] = self.df.loc[i, 'Status']
+                    return res
                 else:
                     continue
         return []
@@ -93,7 +100,7 @@ class Server:
             print(f'[MESSAGE FROM {addr}] {msg}')
             if msg["type"] == 2:
                 break
-            response = self.processMessage(msg)
+            response = self.processMessage(msg, addr)
             conn.send(response.encode(FORMAT))
                 
         print(f"[END CONNECTION] {addr} disconnected.")
@@ -105,7 +112,7 @@ class Server:
             thread = threading.Thread(target=self.handle_client, args=(conn,addr))
             thread.start()
 
-    def processAPMessage(self, msg):
+    def processAPMessage(self, msg, addr):
         '''
         msg: object(pro, type, username, password)
         return: str_en(flag, data)
@@ -120,20 +127,21 @@ class Server:
             else:
                 fri_list = self.get_listfriend(msg["username"])
                 self.setUserStatus(msg["username"], 1)
-                return json.dumps({"flag": res, "data": fri_list})
+                self.setUserIP(msg["username"], addr[0])
+                return json.dumps(str({"flag": res, "data": fri_list}))
         else: 
             # logout
             res = self.setUserStatus(msg["username"], 0) & self.setUserIP(msg["username"], None)
             return json.dumps({"flag": res, "data": None})
     
 
-    def processMessage(self, msg):
+    def processMessage(self, msg, addr):
         '''
         msg: object(pro, ...)
         return: str_en(...)
         '''
         if msg['pro'] == "AP":
-            return self.processAPMessage(msg)
+            return self.processAPMessage(msg, addr)
         elif msg['pro'] == "SCP":
             return "Receive SCP Message"
         else:
