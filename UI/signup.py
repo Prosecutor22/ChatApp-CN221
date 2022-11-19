@@ -85,9 +85,9 @@ class SignupPage:
         self.lgn_button_label = Label(self.lgn_frame, image=photo, bg='#040405')
         self.lgn_button_label.image = photo
         self.lgn_button_label.place(x=550, y=450)
-        self.signup = Button(self.lgn_button_label, text='SIGNUP', font=("yu gothic ui", 13, "bold"), width=25, bd=0,
+        self.sign_up_button = Button(self.lgn_button_label, text='SIGNUP', font=("yu gothic ui", 13, "bold"), width=25, bd=0,
                             bg='#3047ff', cursor='hand2', activebackground='#3047ff', fg='white')
-        self.signup.place(x=20, y=10)
+        self.sign_up_button.place(x=20, y=10)
         # =========== Sign Up ==================================================
         self.sign_in_label = Label(self.lgn_frame, text='Already had an account?', font=("yu gothic ui", 11, "bold"),
                                 relief=FLAT, borderwidth=0, background="#040405", fg='white')

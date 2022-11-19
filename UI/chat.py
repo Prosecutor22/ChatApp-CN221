@@ -2,7 +2,7 @@ from tkinter import *
 from PIL import ImageTk, Image
 
 class ChatPage:
-    def __init__(self, window):
+    def __init__(self, window, data):
         self.window = window
         self.window.geometry('1166x718')
         self.window.resizable(0, 0)
@@ -16,6 +16,9 @@ class ChatPage:
         self.bg_panel = Label(self.window, image=photo)
         self.bg_panel.image = photo
         self.bg_panel.pack(fill='both', expand='yes')
+        
+
+
 def page():
     window = Tk()
     ChatPage(window)

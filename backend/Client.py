@@ -114,7 +114,14 @@ class Client:
     def sign_out(self):
         self.client.send(self.createAuthMessage(2, None, None))
         self.client.close()
-        
+
+    def createRequestChat(self, fr_name:str ):
+
+        pass 
+
+    '''
+
+    '''
 
 if __name__ == "__main__":
     (Client(argv[1], int(argv[2]))).run()

@@ -6,8 +6,8 @@ import pandas as pd
 
 FORMAT = 'utf-8'
 
-def sendMessage(str message):
-    meg = 
+def sendMessage(message: str):
+    pass
 
 def createMessage():
 
@@ -18,4 +18,3 @@ def encodeMessage():
 
 if __name__ == "__main__":
     print(1)
-    
