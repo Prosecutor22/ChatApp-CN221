@@ -22,6 +22,7 @@ class Server:
         self.df = pd.read_csv(self.fileNameClient, index_col='username')
         self.df['IP'] = None
         self.df['Status'] = 0
+        self.df['listenPort'] = None
 
     def setUserStatus(self, username: str, status: int) -> int:
         self.df.loc[username, 'Status'] = status
@@ -125,6 +126,7 @@ class Server:
             if res == 0: #fail login
                 return json.dumps({"flag": 0, "data": None})
             else:
+                self.df.iloc[msg["username"], 'listenPort'] = msg['port']
                 fri_list = self.get_listfriend(msg["username"])
                 self.setUserStatus(msg["username"], 1)
                 self.setUserIP(msg["username"], addr[0])
