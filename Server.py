@@ -98,7 +98,7 @@ class Server:
                 
         print(f"[END CONNECTION] {addr} disconnected.")
         conn.close()
-    
+
     def run(self):
         while True:
             (conn, addr) = self.server.accept()
