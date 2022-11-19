@@ -148,5 +148,14 @@ class Server:
             return "Receive CP Message"
         
 
+    def handle_clientRequestChat(self, msg, source):
+        '''
+        msg: object(IP - c1, port - c1, usrname - c2)
+        do: send a request to c2
+        '''
+        pass
+
+    
+
 if __name__ == "__main__":
     (Server(argv[1], int(argv[2]))).run()
