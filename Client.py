@@ -12,8 +12,9 @@ class Client:
         self.client.connect((ip_address, port))
         self.msg = self.client.recv(2048).decode()
         print(self.msg)
+        self.friendList
         # self.sendServer(self.createAuthMessage(0, 'minhpp', 'minhpp'))
-        # self.friendList
+        
         # self.client.close()
 
     def createAuthMessage(self, type: int, username: str, password: str) -> str:
@@ -49,7 +50,7 @@ class Client:
         elif obj['flag'] == 2:
             df = pd.DataFrame(list((obj.data).items()), columns = ['username', 'stt'])
             df = df.set_index('username')
-            friendList.loc[df2.index[0], 'stt'] = df.stt[0]
+            friendList.loc[df.index[0], 'stt'] = df.stt[0]
         else:
             print("Message fault")
 
@@ -65,25 +66,26 @@ class Client:
         pass
 
     def run(self):
-        while True:
-            print("Sign up")
-            username = input("Enter username: ")
-            password = input("Enter password: ")
-            msg = self.createAuthMessage(0, username, password)
-            self.client.send(msg)
-            rcv_msg = self.client.recv(2048).decode(FORMAT)
-            rcv_msg = json.loads(rcv_msg)
-            if rcv_msg['flag'] == 1:
-                print('[INFO] Sign up successfully')
-                break
-            else:
-                print('[INFO] Sign up fail')
-        while True:
-            print("Sign in")
-            username = input("Enter username: ")
-            password = input("Enter password: ")
-            msg = self.createAuthMessage(1, username, password)
-            self.client.send(msg)
+        # while True:
+        #     print("Sign up")
+        #     username = input("Enter username: ")
+        #     password = input("Enter password: ")
+        #     msg = self.createAuthMessage(0, username, password)
+        #     self.client.send(msg)
+        #     rcv_msg = self.client.recv(2048).decode(FORMAT)
+        #     rcv_msg = json.loads(rcv_msg)
+        #     if rcv_msg['flag'] == 1:
+        #         print('[INFO] Sign up successfully')
+        #         break
+        #     else:
+        #         print('[INFO] Sign up fail')
+        # while True:
+        print("Sign in")
+        username = input("Enter username: ")
+        password = input("Enter password: ")
+        msg = self.createAuthMessage(1, username, password)
+        self.client.send(msg)
+        while True: 
             rcv_msg = self.client.recv(2048).decode(FORMAT)
             rcv_msg = json.loads(rcv_msg)
             if rcv_msg['flag'] == 1:
