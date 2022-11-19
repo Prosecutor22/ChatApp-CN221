@@ -49,7 +49,7 @@ class Client:
         elif obj['flag'] == 2:
             df = pd.DataFrame(list((obj.data).items()), columns = ['username', 'stt'])
             df = df.set_index('username')
-            friendList.loc[df2.index[0], 'stt'] = df.stt[0]
+            friendList.loc[df.index[0], 'stt'] = df.stt[0]
         else:
             print("Message fault")
 
