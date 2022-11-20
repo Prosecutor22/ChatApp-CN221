@@ -6,15 +6,20 @@ import pandas as pd
 
 FORMAT = 'utf-8'
 
-def sendMessage(message: str):
+def sendChatMessage(message: str, ):
     pass
 
-def createMessage():
+def createChatMessage(name: str, data: str):
+    if str == "":
+        pass
+    else:
+        pass
+    message = {
+        'name': name,
+        'data': data
+    }
+    msg = json.dumps(message)
+    return msg
 
-    pass
-
-def encodeMessage():
-    pass
-
-if __name__ == "__main__":
-    print(1)
+def receiveChatMessage(conn):
+    

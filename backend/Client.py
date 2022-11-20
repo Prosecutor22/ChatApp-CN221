@@ -5,21 +5,26 @@ import json
 import pandas as pd
 
 FORMAT = 'utf-8'
+CLIENT_PORT = 4444
+SERVER_PORT = 55555
 
 class Client:
     def __init__(self, ip_address, port):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect((ip_address, port))
+        
+        self.hostname=socket.gethostname()
+        self.IPAddr=socket.gethostbyname(self.hostname)
+        
         self.clientListen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        hostname=socket.gethostname()
-        IPAddr=socket.gethostbyname(hostname)
 
-        self.clientListen.bind((IPAddr, 222))
+        self.clientListen.bind((self.IPAddr, 222))
         self.host, self.portListen = self.clientListen.getsockname()
         self.msg = self.client.recv(2048).decode()
         print(self.msg)
         self.friendList = []
+        self.portCounter = 60000
 
     def createAuthMessage(self, type: int, username: str, password: str) -> str:
         """
@@ -43,7 +48,6 @@ class Client:
             self.friendList = pd.DataFrame(list((obj.data).items()), columns = ['username', 'stt'])
             self.friendList = self.friendList.set_index('username')
             self.friendList['portListen'] = None
-            self.friendList['portAnswer'] = None
             self.friendList['IP'] = None
         elif obj['flag'] == 2:
             df = pd.DataFrame(list((obj.data).items()), columns = ['username', 'stt'])
@@ -55,8 +59,9 @@ class Client:
             print("Message fault")
 
     def SCProcess(self, obj):
-        (self.friendList).iLoc[obj.fr_name, 'IP'] = obj['IP'];
-        (self.friendList).iLoc[obj.fr_name, 'portListen'] = obj['port'];
+        (self.friendList).loc[obj.fr_name, 'IP'] = obj['IP']
+        (self.friendList).loc[obj.fr_name, 'portListen'] = obj['port']
+        (self.friendList).loc[obj.fr_name, 'peerAnswer'].connect(obj['IP'], obj['port'])
         pass
     
     def receiveServer(self, msg):
@@ -89,23 +94,7 @@ class Client:
         self.client.close()
 
     def RequestChat(self, fr_name:str ):
-        peerListen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        Listenhost, Listenport = peerListen.getsockname()
-        peerAnswer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        Answerhost, Answerport = peerAnswer.getsockname()
-        (self.friendList).iloc[fr_name, 'portAnswer'] = Answerport
-        message = {
-            'pro': 'SCP',
-            'IP': Listenhost,
-            'port': Listenport,
-            'fr_name': fr_name
-        }
-        msg = json.dumps(message)
-        msg.encode(FORMAT)
-        self.client.send(msg)
-        rcv_msg = self.client.recv(2048).decode(FORMAT)
-        rcv_msg = json.loads(rcv_msg)
-        self.receiveServer(rcv_msg)
+        
         pass 
 
     '''

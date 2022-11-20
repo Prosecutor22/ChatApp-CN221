@@ -6,9 +6,7 @@ import os
 import json
 import pandas as pd
 
-
 FORMAT = 'utf-8'
-DISCONNECT_MESSAGE = "!DISCONNECT"
 
 class Server:
     def __init__(self, ip_address: str, port: int):
@@ -21,8 +19,6 @@ class Server:
         self.filenameListFriend = os.getcwd() + '\Data\Server\listFriend.txt'
         self.df = pd.read_csv(self.fileNameClient, index_col='username')
         self.df['IP'] = None
-        self.df['Status'] = 0
-        self.df['listenPort'] = None
 
     def setUserStatus(self, username: str, status: int) -> int:
         self.df.loc[username, 'Status'] = status
@@ -102,8 +98,7 @@ class Server:
             if msg["type"] == 2:
                 break
             response = self.processMessage(msg, addr)
-            conn.send(response.encode(FORMAT))
-                
+            conn.send(response.encode(FORMAT))  
         print(f"[END CONNECTION] {addr} disconnected.")
         conn.close()
 
@@ -136,7 +131,6 @@ class Server:
             res = self.setUserStatus(msg["username"], 0) & self.setUserIP(msg["username"], None)
             return json.dumps({"flag": res, "data": None})
     
-
     def processMessage(self, msg, addr):
         '''
         msg: object(pro, ...)
@@ -144,18 +138,9 @@ class Server:
         '''
         if msg['pro'] == "AP":
             return self.processAPMessage(msg, addr)
-        elif msg['pro'] == "SCP":
-            return "Receive SCP Message"
         else:
             return "Receive CP Message"
         
-
-    def handle_clientRequestChat(self, msg, source):
-        '''
-        msg: object(IP - c1, port - c1, usrname - c2)
-        do: send a request to c2
-        '''
-        pass
 
     
 
