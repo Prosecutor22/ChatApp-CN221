@@ -124,9 +124,9 @@ class Server:
         elif msg["type"] == 1: #login
             res = self.authenticate(msg["username"], msg["password"])
             if res == 0: #fail login
-                return json.dumps({"flag": 0, "data": None})
+                return json.dumps(str({"flag": 0, "data": None}))
             else:
-                self.df.iloc[msg["username"], 'listenPort'] = msg['port']
+                self.df.loc[msg["username"], 'listenPort'] = msg['port']
                 fri_list = self.get_listfriend(msg["username"])
                 self.setUserStatus(msg["username"], 1)
                 self.setUserIP(msg["username"], addr[0])

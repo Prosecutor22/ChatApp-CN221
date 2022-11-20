@@ -79,7 +79,7 @@ class Client:
         msg = self.createAuthMessage(1, username, password)
         self.client.send(msg)
         rcv_msg = self.client.recv(2048).decode(FORMAT)
-        rcv_msg = json.loads(rcv_msg)
+        rcv_msg = eval(json.loads(rcv_msg))
         return rcv_msg
 
     def sign_out(self):
