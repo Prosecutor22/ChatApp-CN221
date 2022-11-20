@@ -53,7 +53,7 @@ class Server:
         with open(self.fileNameClient, 'a+', newline='') as csvfile:
             csvwriter = csv.writer(csvfile)
             csvwriter.writerow(userData)   
-        self.df = pd.concat([self.df, pd.DataFrame({'password': [password], 'IP': [None], 'Status': [0]}, index=[username])])    
+        self.df = pd.concat([self.df, pd.DataFrame({'password': [password], 'IP': [None]}, index=[username])])    
         return 1  
       
     def authenticate(self, username: str, password: str) -> int:
@@ -79,7 +79,7 @@ class Server:
                     tmp = [x for x in tmp[1].split(',')]
                     res = {}
                     for i in tmp:
-                        res[i] = self.df.loc[i, 'Status']
+                        res[i] = self.df.loc[i, 'IP']
                     return res
                 else:
                     continue
@@ -108,9 +108,9 @@ class Server:
             thread = threading.Thread(target=self.handle_client, args=(conn,addr))
             thread.start()
 
-    def processAPMessage(self, msg, addr):
+    def processMessage(self, msg, addr):
         '''
-        msg: object(pro, type, username, password)
+        msg: object(type, username, password)
         return: str_en(flag, data)
         '''
         if msg["type"] == 0: #sign up
@@ -130,18 +130,6 @@ class Server:
             # logout
             res = self.setUserStatus(msg["username"], 0) & self.setUserIP(msg["username"], None)
             return json.dumps({"flag": res, "data": None})
-    
-    def processMessage(self, msg, addr):
-        '''
-        msg: object(pro, ...)
-        return: str_en(...)
-        '''
-        if msg['pro'] == "AP":
-            return self.processAPMessage(msg, addr)
-        else:
-            return "Receive CP Message"
-        
-
     
 
 if __name__ == "__main__":

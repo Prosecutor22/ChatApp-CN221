@@ -5,8 +5,8 @@ import json
 import pandas as pd
 
 FORMAT = 'utf-8'
-CLIENT_PORT = 4444
-SERVER_PORT = 55555
+
+P2P_LISTEN_PORT = 4444
 
 class Client:
     def __init__(self, ip_address, port):
@@ -24,7 +24,6 @@ class Client:
         self.msg = self.client.recv(2048).decode()
         print(self.msg)
         self.friendList = []
-        self.portCounter = 60000
 
     def createAuthMessage(self, type: int, username: str, password: str) -> str:
         """
@@ -34,8 +33,7 @@ class Client:
             "pro": "AP",
             "type": type,
             "username": username,
-            "password": password,
-            "port": self.portListen
+            "password": password
         }
         msg = json.dumps(message)
         return msg.encode(FORMAT)
@@ -57,12 +55,6 @@ class Client:
                 self.friendList.loc[df.index[0], 'IP'] = None
         else:
             print("Message fault")
-
-    def SCProcess(self, obj):
-        (self.friendList).loc[obj.fr_name, 'IP'] = obj['IP']
-        (self.friendList).loc[obj.fr_name, 'portListen'] = obj['port']
-        (self.friendList).loc[obj.fr_name, 'peerAnswer'].connect(obj['IP'], obj['port'])
-        pass
     
     def receiveServer(self, msg):
         message = msg.decode()
@@ -72,8 +64,17 @@ class Client:
             self.SCPprocess(message)
         pass
 
+    def handle_server(self, conn, addr):
+        while True:
+            msg = conn.recv(2048).decode(FORMAT)
+            msg = json.loads(msg)
+            self.APClientProcess(msg)
+
     def run(self):
-        pass
+        while True:
+            (conn, addr) = self.clientListen.accept()
+            thread = threading.Thread(target=self.handle_server, args=(conn,addr))
+            thread.start()
     
     def sign_up(self, username, password):
         msg = self.createAuthMessage(0, username, password)
@@ -93,9 +94,11 @@ class Client:
         self.client.send(self.createAuthMessage(2, None, None))
         self.client.close()
 
-    def RequestChat(self, fr_name:str ):
-        
-        pass 
+    def ConnectFriendtoChat(self, fr_name:str ):
+        peerAnswer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        (self.friendList).loc[fr_name, 'socketAnswer'] = peerAnswer
+        friendIP = (self.friendList).loc[fr_name, 'IP']
+        ((self.friendList).loc[fr_name, 'socketAnswer']).connect((friendIP, P2P_LISTEN_PORT))
 
     '''
 
