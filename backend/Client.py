@@ -11,7 +11,7 @@ class Client:
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect((ip_address, port))
         self.clientListen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        #self.host, self.portListen = socket.getsockname(clientListen)
+        self.host, self.portListen = self.clientListen.getsockname()
         self.msg = self.client.recv(2048).decode()
         print(self.msg)
         self.friendList = []
@@ -91,14 +91,14 @@ class Client:
             'pro': 'SCP',
             'IP': Listenhost,
             'port': Listenport,
-            #'fr_name': fr_name
+            'fr_name': fr_name
         }
         msg = json.dumps(message)
         msg.encode(FORMAT)
         self.client.send(msg)
         rcv_msg = self.client.recv(2048).decode(FORMAT)
         rcv_msg = json.loads(rcv_msg)
-        receiveServer(rcv_msg)
+        self.receiveServer(rcv_msg)
         pass 
 
     '''
