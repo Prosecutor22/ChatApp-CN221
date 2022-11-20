@@ -57,6 +57,10 @@ class SignupPage:
                                     font=("yu gothic ui", 17, "bold"))
         self.sign_up_label.place(x=650, y=240)
 
+        self.message = Label(self.lgn_frame, text="", bg="#040405", fg="red",
+                                    font=("yu gothic ui", 13, "bold"))
+        self.message.place(x=550, y=275)
+
         # ========================================================================
         # ============================username====================================
         # ========================================================================

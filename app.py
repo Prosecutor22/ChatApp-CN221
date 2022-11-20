@@ -4,6 +4,7 @@ import tkinter
 from backend.Client import Client
 from UI.signin import SigninPage
 from UI.signup import SignupPage
+from tkinter import *
 
 def handle_sign_in(event):
     global page
@@ -11,6 +12,8 @@ def handle_sign_in(event):
     password = page.password_entry.get()
     recv_msg = client.sign_in(username, password)
     print(recv_msg)
+    if recv_msg['flag'] == 0:
+        page.message.config(text="Incorrect username or password")
 
 def handle_sign_up(event):
     global page
@@ -18,6 +21,8 @@ def handle_sign_up(event):
     password = page.password_entry.get()
     recv_msg = client.sign_up(username, password)
     print(recv_msg)
+    if recv_msg['flag'] == 0:
+        page.message.config(text="Username already exists")
 
 def change_to_sign_up(event):
     global page 

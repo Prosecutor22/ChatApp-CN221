@@ -11,6 +11,11 @@ class Client:
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect((ip_address, port))
         self.clientListen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        hostname=socket.gethostname()
+        IPAddr=socket.gethostbyname(hostname)
+
+        self.clientListen.bind((IPAddr, 222))
         self.host, self.portListen = self.clientListen.getsockname()
         self.msg = self.client.recv(2048).decode()
         print(self.msg)
@@ -25,7 +30,7 @@ class Client:
             "type": type,
             "username": username,
             "password": password,
-            "port": self.listenPort
+            "port": self.portListen
         }
         msg = json.dumps(message)
         return msg.encode(FORMAT)
@@ -83,9 +88,9 @@ class Client:
 
     def RequestChat(self, fr_name:str ):
         peerListen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        Listenhost, Listenport = socket.getsockname(peerListen)
+        Listenhost, Listenport = peerListen.getsockname()
         peerAnswer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        Answerhost, Answerport = socket.getsockname(peerAnswer)
+        Answerhost, Answerport = peerAnswer.getsockname()
         (self.friendList).iloc[fr_name, 'portAnswer'] = Answerport
         message = {
             'pro': 'SCP',
