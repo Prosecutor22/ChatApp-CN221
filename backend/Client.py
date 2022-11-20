@@ -46,6 +46,8 @@ class Client:
             self.friendList['portAnswer'] = None
             self.friendList['IP'] = None
         elif obj['flag'] == 2:
+            df = pd.DataFrame(list((obj.data).items()), columns = ['username', 'stt'])
+            df = df.set_index('username')
             self.friendList.loc[df.index[0], 'stt'] = df.stt[0]
             if (df.stt[0] == 0):
                 self.friendList.loc[df.index[0], 'IP'] = None
