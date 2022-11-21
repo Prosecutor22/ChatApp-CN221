@@ -3,7 +3,7 @@ import threading
 from sys import argv
 import json
 import pandas as pd
-from './const' import *
+from backend.const import *
 
 class Client:
     def __init__(self, ip_address, port):
@@ -12,6 +12,7 @@ class Client:
         self.client.connect((ip_address, port))
         self.msg = self.client.recv(2048).decode()
         print(self.msg)
+        self.isClosed = False
         
         # get ip of client and create socket to listen from server
         self.hostname = socket.gethostname()
@@ -21,7 +22,7 @@ class Client:
         self.clientListen.listen(1)
         print(f"[START] Client is listening at {self.ip}:{CLIENT_LISTEN_PORT}")
 
-    def create_auth_message(self, type: int, username: str, password: str) -> str:
+    def create_auth_message(self, type, username, password):
         # create and encode as binaries Auth message
         message = {
             "pro": "AP",
@@ -32,7 +33,7 @@ class Client:
         msg = json.dumps(message)
         return msg.encode(FORMAT)
 
-    def handle_server(conn, addr, callback):
+    def handle_server(self, conn, addr, callback):
         print(f"[NEW CONNECTION] {addr} connected.")
         while True:
             # break if closed
@@ -84,5 +85,11 @@ class Client:
         self.client.send(self.create_auth_message(2, None, None))
         self.client.close()
         self.isClosed = True
+
+    def ConnectFriendtoChat(self, fr_name:str ):
+        peerAnswer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        (self.friendList).loc[fr_name, 'socketAnswer'] = peerAnswer
+        friendIP = (self.friendList).loc[fr_name, 'IP']
+        ((self.friendList).loc[fr_name, 'socketAnswer']).connect((friendIP, P2P_LISTEN_PORT))
 
     

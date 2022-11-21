@@ -5,8 +5,7 @@ import csv
 import os
 import json
 import pandas as pd
-
-FORMAT = 'utf-8'
+from const import *
 
 class Server:
     def __init__(self, ip_address: str, port: int):
@@ -53,7 +52,7 @@ class Server:
         with open(self.fileNameClient, 'a+', newline='') as csvfile:
             csvwriter = csv.writer(csvfile)
             csvwriter.writerow(userData)   
-        self.df = pd.concat([self.df, pd.DataFrame({'password': [password], 'IP': [None], 'Status': [0]}, index=[username])])    
+        self.df = pd.concat([self.df, pd.DataFrame({'password': [password], 'IP': [None]}, index=[username])])    
         return 1  
       
     def authenticate(self, username: str, password: str) -> int:
@@ -78,7 +77,7 @@ class Server:
                 if tmp[0] == username:
                     tmp = [x for x in tmp[1].split(',')]
                     res = {}
-                    for friend in tmp:
+                    for i in tmp:
                         res[i] = self.df.loc[i, 'IP']
                     return res
                 else:
@@ -107,10 +106,29 @@ class Server:
             (conn, addr) = self.server.accept()
             thread = threading.Thread(target=self.handle_client, args=(conn,addr))
             thread.start()
-
-    def processAPMessage(self, msg, addr):
+    
+    def sendMessageToClient(self, username: str, destinationAddr):
         '''
-        msg: object(pro, type, username, password)
+        username: name of client that will be sent
+        destinationAddr: IP of client that will be sent
+        '''
+        self.server.connect((destinationAddr, CLIENT_LISTEN_PORT))
+        listFr = self.get_listfriend(username)
+        message = {"flag": 1,"data": listFr}
+        msg = json.dumps(message)
+        msg = msg.encode(FORMAT)
+        self.server.send(msg)
+
+    def sendMessageToAllFriend(self, fri_list):
+        '''
+        fri_list: list of name of destination
+        '''
+        for name, IP in fri_list.items():
+            self.sendMessageToAllFriend(name, IP)
+
+    def processMessage(self, msg, addr):
+        '''
+        msg: object(type, username, password)
         return: str_en(flag, data)
         '''
         if msg["type"] == 0: #sign up
@@ -125,23 +143,13 @@ class Server:
                 fri_list = self.get_listfriend(msg["username"])
                 self.setUserStatus(msg["username"], 1)
                 self.setUserIP(msg["username"], addr[0])
+                self.sendMessageToAllFriend(fri_list)
                 return json.dumps(str({"flag": res, "data": fri_list}))
         else: 
             # logout
             res = self.setUserStatus(msg["username"], 0) & self.setUserIP(msg["username"], None)
+            self.sendMessageToAllFriend(fri_list)
             return json.dumps({"flag": res, "data": None})
-    
-    def processMessage(self, msg, addr):
-        '''
-        msg: object(pro, ...)
-        return: str_en(...)
-        '''
-        if msg['pro'] == "AP":
-            return self.processAPMessage(msg, addr)
-        else:
-            return "Receive CP Message"
-        
-
     
 
 if __name__ == "__main__":
