@@ -145,7 +145,7 @@ class Server:
                 fri_list = self.get_listfriend(msg["username"])
                 self.setUserStatus(msg["username"], 1)
                 self.setUserIP(msg["username"], addr[0])
-                self.sendMessageToAllFriend(msg["username"], addr, fri_list)
+                self.sendMessageToAllFriend(fri_list)
                 return json.dumps(str({"flag": res, "data": fri_list}))
         else: 
             # logout
