@@ -7,6 +7,7 @@ import json
 import pandas as pd
 
 FORMAT = 'utf-8'
+PORT_SEND_TO_ALL = 5555
 
 class Server:
     def __init__(self, ip_address: str, port: int):
@@ -107,6 +108,25 @@ class Server:
             (conn, addr) = self.server.accept()
             thread = threading.Thread(target=self.handle_client, args=(conn,addr))
             thread.start()
+    
+    def sendMessageToClient(self, username: str, destinationAddr):
+        '''
+        username: name of client that will be sent
+        destinationAddr: IP of client that will be sent
+        '''
+        self.server.connect((destinationAddr, PORT_SEND_TO_ALL))
+        listFr = self.get_listfriend(username)
+        message = {"flag": 1,"data": listFr}
+        msg = json.dumps(message)
+        msg = msg.encode(FORMAT)
+        self.server.send(msg)
+
+    def sendMessageToAllFriend(self, fri_list):
+        '''
+        fri_list: list of name of destination
+        '''
+        for name, IP in fri_list.items():
+            self.sendMessageToAllFriend(name, IP)
 
     def processMessage(self, msg, addr):
         '''
@@ -125,10 +145,12 @@ class Server:
                 fri_list = self.get_listfriend(msg["username"])
                 self.setUserStatus(msg["username"], 1)
                 self.setUserIP(msg["username"], addr[0])
+                self.sendMessageToAllFriend(msg["username"], addr, fri_list)
                 return json.dumps(str({"flag": res, "data": fri_list}))
         else: 
             # logout
             res = self.setUserStatus(msg["username"], 0) & self.setUserIP(msg["username"], None)
+            self.sendMessageToAllFriend(fri_list)
             return json.dumps({"flag": res, "data": None})
     
 
