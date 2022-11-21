@@ -36,4 +36,6 @@ def createChatMessage(name: str, data: str):
 def receiveChatMessage(conn):
     msg = conn.recv(2048).decode(FORMAT)
     msg = json.loads(msg)
+    conn.bind()
+    conn.getsockname()
     return msg

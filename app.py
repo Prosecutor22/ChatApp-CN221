@@ -11,7 +11,7 @@ def handle_sign_in(event):
     global page
     username = page.username_entry.get()
     password = page.password_entry.get()
-    rcv_msg = client.sign_in(username, password, change_status)
+    rcv_msg = client.sign_in(username, password)
     print(rcv_msg)
     if rcv_msg['flag'] == 0:
         page.message.config(text="Incorrect username or password", fg="red")
@@ -45,7 +45,7 @@ def change_status(username, ip):
     print(username, ip)
 
 if __name__ == "__main__":
-    client = Client(argv[1], int(argv[2]))
+    client = Client(argv[1], int(argv[2]), change_status)
     window = tkinter.Tk()
     page = SigninPage(window)
     page.sign_in_button.bind('<Button-1>', handle_sign_in)

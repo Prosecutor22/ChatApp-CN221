@@ -6,22 +6,27 @@ import pandas as pd
 from backend.const import *
 
 class Client:
-    def __init__(self, ip_address, port):
+    def __init__(self, ip_address, port, update_status_cb):
+        self.callback = update_status_cb
+
+        # get ip of client and create socket to listen from server
+        self.hostname = socket.gethostname()
+        self.ip = socket.gethostbyname(self.hostname)
+        self.clientListen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # print(self.ip)
+        self.clientListen.bind((self.ip, CLIENT_LISTEN_PORT))
+        self.clientListen.listen(1)
+        print(f"[START] Client is listening at {self.ip}:{CLIENT_LISTEN_PORT}")
+        thread = threading.Thread(target=self.handle_server, args=())
+        thread.start()
+
         # create client socket to connect to server
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect((ip_address, port))
         self.msg = self.client.recv(2048).decode()
         print(self.msg)
         self.isClosed = False
-        
-        # get ip of client and create socket to listen from server
-        self.hostname = socket.gethostname()
-        self.ip = socket.gethostbyname(self.hostname)
-        self.clientListen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.clientListen.bind((self.ip, CLIENT_LISTEN_PORT))
-        self.clientListen.listen(1)
-        print(f"[START] Client is listening at {self.ip}:{CLIENT_LISTEN_PORT}")
-
+    
     def create_auth_message(self, type, username, password):
         # create and encode as binaries Auth message
         message = {
@@ -33,8 +38,10 @@ class Client:
         msg = json.dumps(message)
         return msg.encode(FORMAT)
 
-    def handle_server(self, conn, addr, callback):
+    def handle_server(self):
+        (conn, addr) = self.clientListen.accept()
         print(f"[NEW CONNECTION] {addr} connected.")
+            
         while True:
             # break if closed
             if self.isClosed:
@@ -50,7 +57,7 @@ class Client:
                 f_ip = msg['data'].values()[0]
                 self.friendList.loc[f_username, 'ip'] = f_ip
                 print(f'[INFO] List friends: {self.friendList}')
-                callback(f_username, f_ip)
+                self.callback(f_username, f_ip)
         print(f"[END CONNECTION] {addr} disconnected.")
         conn.close()
     
@@ -62,7 +69,7 @@ class Client:
         rcv_msg = json.loads(rcv_msg)
         return rcv_msg
     
-    def sign_in(self, username, password, callback):
+    def sign_in(self, username, password):
         # send sign in message
         msg = self.create_auth_message(1, username, password)
         self.client.send(msg)
@@ -71,11 +78,8 @@ class Client:
 
         # update friend list and  when sign in successfully
         if rcv_msg['flag'] == 1:
-            (conn, addr) = self.clientListen.accept()
-            thread = threading.Thread(target=self.handle_server, args=(conn, addr, callback))
-            thread.start()
             users = rcv_msg['data']
-            self.friendList = pd.DataFrame({'username': users.keys(), 'ip': users.values()}, index=['username'])   
+            self.friendList = pd.DataFrame({'username': users.keys(), 'ip': users.values()})   
             print(f'[INFO] List friends: {self.friendList}')
 
         return rcv_msg
@@ -91,5 +95,10 @@ class Client:
         (self.friendList).loc[fr_name, 'socketAnswer'] = peerAnswer
         friendIP = (self.friendList).loc[fr_name, 'IP']
         ((self.friendList).loc[fr_name, 'socketAnswer']).connect((friendIP, P2P_LISTEN_PORT))
+    
+    def FindFriendbyIP(self, IP: str):
+        pass
+        (self.friendList).loc[self.friendList["IP"] == IP]
+        
 
     

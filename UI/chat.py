@@ -17,7 +17,7 @@ class ChatPage:
 
         self.lstfriend = Listbox(self.sidebar_frame, width=200, font=14)
         for i,j in data.items():
-            status = "offline" if j == "" else "online"
+            status = "offline" if j == None else "online"
             self.lstfriend.insert(END, f"{i}\t\t[{status}]")
         self.lstfriend.bind("<<ListboxSelect>>", self.onSelect)
         self.lstfriend.pack(ipady=100)
@@ -37,6 +37,7 @@ class ChatPage:
         # frame for typing message
         self.typing_frame = Frame(self.window, width=self.window.winfo_screenwidth()-200, height=100, bg='#ff0000')
         self.typing_frame.place(x=200, y=self.window.winfo_screenheight()-100)
+    
     def onSelect(self, val):
         sender = val.widget
         idx = sender.curselection()
@@ -51,5 +52,5 @@ def page():
     window.mainloop()
 
 
-# if __name__ == '__main__':
-#     page()
+if __name__ == '__main__':
+    page()

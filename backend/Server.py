@@ -109,22 +109,27 @@ class Server:
             thread = threading.Thread(target=self.handle_client, args=(conn,addr))
             thread.start()
     
-    def sendMessageToClient(self, username: str, destinationAddr):
-        '''
-        username: name of client that will be sent
-        destinationAddr: IP of client that will be sent
-        '''
-        listFr = self.get_listfriend(username)
-        message = {"flag": 1,"data": listFr}
-        msg = json.dumps(str(message))
-        self.arrOfSocket[username].send(msg)
+    # def sendMessageToClient(self, username: str, destinationAddr):
+    #     '''
+    #     username: name of client that will be sent
+    #     destinationAddr: IP of client that will be sent
+    #     '''
+    #     listFr = self.get_listfriend(username)
+    #     message = {"flag": 2,"data": listFr}
+    #     msg = json.dumps(str(message))
+    #     self.arrOfSocket[username].send(msg)
 
-    def sendMessageToAllFriend(self, fri_list):
+    def sendMessageToAllFriend(self, fri_list, userNameChangeState, IPChangeState):
         '''
         fri_list: list of name of destination
+        send: {usrname: IP}
         '''
         for name, IP in fri_list.items():
-            threading.Thread(target=self.sendMessageToClient, args=(name, IP)).start()
+            # self.sendMessageToClient(name, IP)
+            msg = {"flag": 2, "data": {userNameChangeState: IPChangeState}}
+            msg = json.dumps(msg)
+            if name in self.arrOfSocket.keys():
+                self.arrOfSocket[name].send(msg.encode())
             
 
     def processMessage(self, msg, addr):
@@ -160,16 +165,18 @@ class Server:
                 fri_list = self.get_listfriend(msg["username"])
                 
                 # self.setUserStatus(msg["username"], 1)
+                # print(addr[0])
                 self.setUserIP(msg["username"], addr[0])
                 self.arrOfSocket[msg["username"]] = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.arrOfSocket[msg["username"]].connect((addr[0], CLIENT_LISTEN_PORT))
-                self.sendMessageToAllFriend(fri_list)
+                self.sendMessageToAllFriend(fri_list, msg["username"], addr[0])
                 return json.dumps(str({"flag": res, "data": fri_list}))
 
         else: 
             # logout
             res = self.setUserStatus(msg["username"], 0) & self.setUserIP(msg["username"], None)
-            self.sendMessageToAllFriend(fri_list)
+            fri_list = self.get_listfriend(msg["username"])
+            self.sendMessageToAllFriend(fri_list, msg["username"], None)
             self.arrOfSocket[msg["username"]].close()
             return json.dumps({"flag": res, "data": None})
 
