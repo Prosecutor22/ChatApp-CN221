@@ -14,10 +14,11 @@ class Server:
         self.server.bind((ip_address, port))
         self.server.listen(100)
         print(f"[START] Server is listening at {ip_address}:{port}")
-        self.fileNameClient = os.getcwd() + '\Data\Server\clientData.csv'
-        self.filenameListFriend = os.getcwd() + '\Data\Server\listFriend.txt'
+        self.fileNameClient = os.getcwd() + '/Data/Server/clientData.csv'
+        self.filenameListFriend = os.getcwd() + '/Data/Server/listFriend.txt'
         self.df = pd.read_csv(self.fileNameClient, index_col='username')
         self.df['IP'] = None
+        self.arrOfSocket = {}
 
     def setUserStatus(self, username: str, status: int) -> int:
         self.df.loc[username, 'Status'] = status
@@ -90,6 +91,7 @@ class Server:
         '''
         print(f"[NEW CONNECTION] {addr} connected.")
         conn.send(b'[INFO] Connected')
+        # cho nay co connect toi client lun ko
         while True:
             msg = conn.recv(2048).decode(FORMAT)
             msg = json.loads(msg)
@@ -112,19 +114,18 @@ class Server:
         username: name of client that will be sent
         destinationAddr: IP of client that will be sent
         '''
-        self.server.connect((destinationAddr, CLIENT_LISTEN_PORT))
         listFr = self.get_listfriend(username)
         message = {"flag": 1,"data": listFr}
-        msg = json.dumps(message)
-        msg = msg.encode(FORMAT)
-        self.server.send(msg)
+        msg = json.dumps(str(message))
+        self.arrOfSocket[username].send(msg)
 
     def sendMessageToAllFriend(self, fri_list):
         '''
         fri_list: list of name of destination
         '''
         for name, IP in fri_list.items():
-            self.sendMessageToAllFriend(name, IP)
+            threading.Thread(target=self.sendMessageToClient, args=(name, IP)).start()
+            
 
     def processMessage(self, msg, addr):
         '''
@@ -139,18 +140,38 @@ class Server:
             if res == 0: #fail login
                 return json.dumps(str({"flag": 0, "data": None}))
             else:
-                self.df.loc[msg["username"], 'listenPort'] = msg['port']
+                # create socket for communication
+                # self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                # self.client.connect((ip_address, port))
+                # self.msg = self.client.recv(2048).decode()
+                # print(self.msg)
+                # self.isClosed = False
+            
+                # # get ip of client and create socket to listen from server
+                # self.hostname = socket.gethostname()
+                # self.ip = socket.gethostbyname(self.hostname)
+                # self.clientListen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                # self.clientListen.bind((self.ip, CLIENT_LISTEN_PORT))
+                # self.clientListen.listen(1)
+                # print(f"[START] Client is listening at {self.ip}:{CLIENT_LISTEN_PORT}")
+                
+                # self.df.loc[msg["username"], 'listenPort'] = msg['port']
+                
                 fri_list = self.get_listfriend(msg["username"])
-                self.setUserStatus(msg["username"], 1)
+                
+                # self.setUserStatus(msg["username"], 1)
                 self.setUserIP(msg["username"], addr[0])
+                self.arrOfSocket[msg["username"]] = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.arrOfSocket[msg["username"]].connect((addr[0], CLIENT_LISTEN_PORT))
                 self.sendMessageToAllFriend(fri_list)
                 return json.dumps(str({"flag": res, "data": fri_list}))
+
         else: 
             # logout
             res = self.setUserStatus(msg["username"], 0) & self.setUserIP(msg["username"], None)
             self.sendMessageToAllFriend(fri_list)
+            self.arrOfSocket[msg["username"]].close()
             return json.dumps({"flag": res, "data": None})
-    
 
 if __name__ == "__main__":
     (Server(argv[1], int(argv[2]))).run()
