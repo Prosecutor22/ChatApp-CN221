@@ -17,7 +17,8 @@ class ChatPage:
 
         self.lstfriend = Listbox(self.sidebar_frame, width=200, font=14)
         for i,j in data.items():
-            self.lstfriend.insert(END, i)
+            status = "offline" if j == "" else "online"
+            self.lstfriend.insert(END, f"{i}\t\t[{status}]")
         self.lstfriend.bind("<<ListboxSelect>>", self.onSelect)
         self.lstfriend.pack(ipady=100)
 
@@ -50,5 +51,5 @@ def page():
     window.mainloop()
 
 
-if __name__ == '__main__':
-    page()
+# if __name__ == '__main__':
+#     page()

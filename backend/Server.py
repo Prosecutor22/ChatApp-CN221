@@ -78,8 +78,8 @@ class Server:
                 if tmp[0] == username:
                     tmp = [x for x in tmp[1].split(',')]
                     res = {}
-                    for i in tmp:
-                        res[i] = self.df.loc[i, 'Status']
+                    for friend in tmp:
+                        res[i] = self.df.loc[i, 'IP']
                     return res
                 else:
                     continue
