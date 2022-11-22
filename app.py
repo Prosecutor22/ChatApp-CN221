@@ -96,6 +96,7 @@ def change_message_from_me(event):
     global page
     message = page.typing_entry.get()
     page.typing_entry.delete(0, END)
+    print(page.curChoose.get())
     client.sendMessage("", message, page.curChoose.get())
     page.message_list.insert(END, f"{message['data']} [me]".rjust(150))
     

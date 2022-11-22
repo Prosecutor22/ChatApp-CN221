@@ -22,7 +22,7 @@ def createChatMessage(name: str, data: str):
         'filename': name,
         'data': data
     }
-    msg = json.dumps(message)
+    msg = json.dumps(message).encode(FORMAT)
     return msg
 
 # using for receiving only one message per call, input is connection

@@ -66,7 +66,7 @@ class Client:
             if self.isClosed:
                 break
             (conn, addr) = self.P2PListen.accept()
-            print(f"[NEW CONNECTION] {addr} connected.")
+            print(f"[NEW CONNECTION PEER] {addr} connected.")
             friend = self.FindFriendbyIP(addr[0])
             self.ConnectFriendtoChat(friend)
             thread = threading.Thread(target=self.receiveMessage, args=(conn, friend))
