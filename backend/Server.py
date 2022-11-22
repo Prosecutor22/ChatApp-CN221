@@ -96,10 +96,10 @@ class Server:
             msg = conn.recv(2048).decode(FORMAT)
             msg = json.loads(msg)
             print(f'[MESSAGE FROM {addr}] {msg}')
-            if msg["type"] == 2:
-                break
             response = self.processMessage(msg, addr)
-            conn.send(response.encode(FORMAT))  
+            conn.send(response.encode(FORMAT))
+            if msg["type"] == 2:
+                break  
         print(f"[END CONNECTION] {addr} disconnected.")
         conn.close()
 
