@@ -27,6 +27,7 @@ class Client:
         self.msg = self.client.recv(2048).decode()
         print(self.msg)
         self.isClosed = False
+        self.conns = []
     
     def create_auth_message(self, type, username, password):
         # create and encode as binaries Auth message
@@ -67,6 +68,7 @@ class Client:
             if self.isClosed:
                 break
             (conn, addr) = self.P2PListen.accept()
+            self.conns.append(conn)
             print(f"[NEW CONNECTION PEER] {addr} connected.")
             friend = self.FindFriendbyIP(addr[0])
             self.ConnectFriendtoChat(friend)
@@ -111,6 +113,10 @@ class Client:
         self.client.send(self.create_auth_message(2, None, None))
         self.client.close()
         self.isClosed = True
+        for conn in self.conns:
+            conn.close()
+        for conn in self.friendList['socket'].values():
+            conn.close()
 
     # function call when user click on a friend on list friend
     def ConnectFriendtoChat(self, fr_name:str ):
