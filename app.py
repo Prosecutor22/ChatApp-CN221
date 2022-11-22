@@ -54,6 +54,7 @@ def change_to_sign_in(event):
 def change_status(username, ip):
     # print(username, ip)
     global page
+    print(ip)
     if ip == None:
         for index, item in enumerate(page.lstfriendOnline.get(0, END)):
             if item == username:

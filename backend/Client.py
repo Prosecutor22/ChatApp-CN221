@@ -52,12 +52,13 @@ class Client:
             msg = conn.recv(2048).decode(FORMAT)
             msg = json.loads(msg)
             print(f'[MESSAGE FROM {addr}] {msg}')
-
+            print(msg)
             # update listFriend and call callback when receive update message from server
             if msg['flag'] == 2:
                 f_username = list(msg['data'].keys())[0]
                 f_ip = list(msg['data'].values())[0]
                 self.friendList.loc[f_username, 'ip'] = f_ip
+                self.friendList.loc[f_username, 'socket'] = None
                 print(f'[INFO] List friends: {self.friendList}')
                 self.callback(f_username, f_ip)
         print(f"[END CONNECTION] {addr} disconnected.")
@@ -134,6 +135,7 @@ class Client:
         
     #call when send a message to other 
     def sendMessage(self, filename: str, message: str, username: str):
+        print(username)
         sendChatMessage(filename, message, self.friendList.loc[username, 'socket'])
         if self.friendList.loc[username, 'message'] == None:
             self.friendList.loc[username, 'message'] = [{'filename': filename,
