@@ -53,8 +53,8 @@ class Client:
 
             # update listFriend and call callback when receive update message from server
             if msg['flag'] == 2:
-                f_username = msg['data'].keys()[0]
-                f_ip = msg['data'].values()[0]
+                f_username = list(msg['data'].keys())[0]
+                f_ip = list(msg['data'].values())[0]
                 self.friendList.loc[f_username, 'ip'] = f_ip
                 print(f'[INFO] List friends: {self.friendList}')
                 self.callback(f_username, f_ip)
@@ -117,12 +117,12 @@ class Client:
             return self.friendList.loc[fr_name, 'message']
         peerAnswer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         (self.friendList).loc[fr_name, 'socket'] = peerAnswer
-        friendIP = (self.friendList).loc[fr_name, 'IP']
+        friendIP = (self.friendList).loc[fr_name, 'ip']
         ((self.friendList).loc[fr_name, 'socket']).connect((friendIP, P2P_LISTEN_PORT))
         return self.friendList.loc[fr_name, 'message']
     
     def FindFriendbyIP(self, IP: str):
-        fr_name = (self.friendList)[self.friendList["IP"] == IP]
+        fr_name = (self.friendList)[self.friendList["ip"] == IP]
         return fr_name.index[0]
         
     #call when send a message to other 
