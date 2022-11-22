@@ -3,7 +3,7 @@ import threading
 from sys import argv
 import json
 import pandas as pd
-from const import *
+from backend.const import *
 from ChatProtocol import *
 class Client:
     def __init__(self, ip_address, port, update_status_cb):
@@ -93,7 +93,7 @@ class Client:
             users = rcv_msg['data']
             self.friendList = pd.DataFrame({'ip': users.values()}, index=users.keys())
             self.friendList['socket'] = None
-            self.friendList['message'] = []
+            self.friendList['message'] = None
             print(f'[INFO] List friends: {self.friendList}')
             # start bind the connect from other peer
             self.P2PListen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -128,7 +128,12 @@ class Client:
     #call when send a message to other 
     def sendMessage(self, filename: str, message: str, username: str):
         sendChatMessage(filename, message, self.friendList.loc[username, 'socket'])
-        self.friendList.loc[username, 'message'].append({'filename': filename,
+        if self.friendList.loc[username, 'message'] == None:
+            self.friendList.loc[username, 'message'] = [{'filename': filename,
+                                                        'data': message,
+                                                        'sender': 0}]
+        else:
+            self.friendList.loc[username, 'message'].append({'filename': filename,
                                                         'data': message,
                                                         'sender': 0})
     
@@ -140,7 +145,10 @@ class Client:
             msg = conn.recv(2048).decode(FORMAT)
             msg = json.loads(msg)
             msg['sender'] = 1
-            self.friendList.loc[name, 'message'].append(msg)
+            if self.friendList.loc[name, 'message'] == None:
+                self.friendList.loc[name, 'message'] = [msg]
+            else:
+                self.friendList.loc[name, 'message'].append(msg)
             # callback to change message: param (name, msg)
 
             
