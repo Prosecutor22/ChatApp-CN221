@@ -87,12 +87,12 @@ def onSelect(event):
                 else:
                     page.message_list.insert(END, f"[{value}] {message['data']}")
 
-def change_message_from_friend(username, message):
+def change_message_from_friend(event, username, message):
     global page
     if page.curChoose.get() == username:
         page.message_list.insert(END, f"[{username}] {message['data']}")
 
-def change_message_from_me():
+def change_message_from_me(event):
     global page
     message = page.typing_entry.get()
     page.typing_entry.delete(0, END)
