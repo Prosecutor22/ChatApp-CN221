@@ -11,44 +11,52 @@ class ChatPage:
         self.curChoose = StringVar()
 
         # frame side bar
-        self.sidebar_frame = Frame(self.window, width=200, height=self.window.winfo_screenheight(), bg='#ff0000')
+        self.sidebar_frame = Frame(self.window, width=400, height=self.window.winfo_screenheight(), bg='#ff0000')
         self.sidebar_frame.place(x=0, y=0)
 
 
-        self.lstfriend = Listbox(self.sidebar_frame, width=200, font=14)
+        self.lstfriendOnline = Listbox(self.sidebar_frame, width=400, font=16, fg="green")
         for i,j in data.items():
-            status = "offline" if j == None else "online"
-            self.lstfriend.insert(END, f"{i}\t\t[{status}]")
-        self.lstfriend.bind("<<ListboxSelect>>", self.onSelect)
-        self.lstfriend.pack(ipady=100)
+            if j != "":
+                self.lstfriendOnline.insert(END, i)
+        self.lstfriendOnline.bind("<<ListboxSelect>>", self.onSelect)
+        self.lstfriendOnline.pack(ipady=100)
+
+        self.lstfriendOffline = Listbox(self.sidebar_frame, width=400, font=16, fg="red")
+        for i,j in data.items():
+            if j == "":
+                self.lstfriendOffline.insert(END, i)
+        self.lstfriendOffline.bind("<<ListboxSelect>>", self.onSelect)
+        self.lstfriendOffline.pack(ipady=100)
 
         # frame chat 
-        self.chat_frame = Frame(self.window, width=self.window.winfo_screenwidth()-200, height=self.window.winfo_screenheight()-100)
-        self.chat_frame.place(x=200, y=0)
-        self.label = Label(self.chat_frame, text=0, textvariable=self.curChoose, font=14,)
+        self.chat_frame = Frame(self.window, width=self.window.winfo_screenwidth()-400, height=self.window.winfo_screenheight()-100)
+        self.chat_frame.place(x=400, y=0)
+        self.label = Label(self.chat_frame, text=0, textvariable=self.curChoose, font=16,)
         self.label.pack()
         # contain chat message
-        self.bg_frame = Image.open('images\\background1.png').resize((self.window.winfo_screenwidth()-200,self.window.winfo_screenheight()-150))
+        self.bg_frame = Image.open('images\\background1.png').resize((self.window.winfo_screenwidth()-400,self.window.winfo_screenheight()-150))
         photo = ImageTk.PhotoImage(self.bg_frame)
         self.bg_panel = Label(self.chat_frame, image=photo, height=self.window.winfo_screenheight()-100)
         self.bg_panel.image = photo
         self.bg_panel.pack()
 
         # frame for typing message
-        self.typing_frame = Frame(self.window, width=self.window.winfo_screenwidth()-200, height=100, bg='#ff0000')
-        self.typing_frame.place(x=200, y=self.window.winfo_screenheight()-100)
-    
+        self.typing_frame = Frame(self.window, width=self.window.winfo_screenwidth()-400, height=100, bg='#ff0000')
+        self.typing_frame.place(x=402, y=self.window.winfo_screenheight()-100)
     def onSelect(self, val):
         sender = val.widget
         idx = sender.curselection()
-        value = sender.get(idx)
-        #call start chat
-        self.curChoose.set(value)
+        print(idx)
+        if len(idx) != 0:
+            value = sender.get(idx)
+            # call start chat
+            self.curChoose.set(value)
         #print(self.curChoose.get())
 
 def page():
     window = Tk()
-    ChatPage(window, {"ban1": 0, "ban2": 1})
+    ChatPage(window, {"khanh": "", "nguyen quang khanh": "192.168.0.15", "friend 007": "1111", "friend 001": ""})
     window.mainloop()
 
 
