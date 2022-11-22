@@ -17,7 +17,8 @@ def handle_sign_in(event):
         page.message.config(text="Incorrect username or password", fg="red")
     else:
         page = ChatPage(window, rcv_msg['data'])
-
+        page.sign_out_button.bind('<Button-1>', handle_sign_out)
+        
 def handle_sign_up(event):
     global page
     username = page.username_entry.get()
@@ -28,6 +29,12 @@ def handle_sign_up(event):
         page.message.config(text="Username already exists", fg="red")
     else:
         page.message.config(text="Sign up successfully", fg="green")
+
+def handle_sign_out(event):
+    global page
+    client.sign_out()
+    print('[SIGN OUT]')
+    page = SigninPage(window)
 
 def change_to_sign_up(event):
     global page 

@@ -4,6 +4,11 @@
 # de = json.loads(s)
 # dic = eval(de)
 # print(type(dic['data']))
-import pandas as pd
-t = pd.DataFrame({}, columns=['r'], index='d')
-print(t)
+# import pandas as pd
+# t = {'ban1': 0, 'bab2': 2}
+# t = pd.DataFrame({'t':t.values()}, index=t.keys())
+# print(t)
+import socket
+hostname = socket.gethostname()
+ip = socket.gethostbyname(hostname)
+print(ip)

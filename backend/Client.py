@@ -4,6 +4,7 @@ from sys import argv
 import json
 import pandas as pd
 from backend.const import *
+from ChatProtocol import *
 
 class Client:
     def __init__(self, ip_address, port, update_status_cb):
@@ -60,6 +61,18 @@ class Client:
                 self.callback(f_username, f_ip)
         print(f"[END CONNECTION] {addr} disconnected.")
         conn.close()
+
+    def handle_P2P(self):
+        while True:
+            if self.isClosed:
+                break
+            (conn, addr) = self.P2PListen.accept()
+            print(f"[NEW CONNECTION] {addr} connected.")
+            friend = self.FindFriendbyIP(addr[0])
+            self.ConnectFriendtoChat(friend)
+            thread = threading.Thread(target=self.receiveMessage, args=(conn, friend))
+            thread.start()
+        print("[END LISTEN FROM OTHER PEER]")
     
     def sign_up(self, username, password):
         # send sign up message and return received message to caller
@@ -79,8 +92,17 @@ class Client:
         # update friend list and  when sign in successfully
         if rcv_msg['flag'] == 1:
             users = rcv_msg['data']
-            self.friendList = pd.DataFrame({'username': users.keys(), 'ip': users.values()})   
+            self.friendList = pd.DataFrame({'ip': users.values()}, index=users.keys())
+            self.friendList['socket'] = None
+            self.friendList['message'] = None
             print(f'[INFO] List friends: {self.friendList}')
+            # start bind the connect from other peer
+            self.P2PListen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.P2PListen.bind((self.ip, P2P_LISTEN_PORT))
+            self.P2PListen.listen(100)
+            print(f"[START] Peer is listening at {self.ip}:{P2P_LISTEN_PORT}")
+            thread = threading.Thread(target=self.handle_P2P, args=())
+            thread.start()
 
         return rcv_msg
 
@@ -90,15 +112,32 @@ class Client:
         self.client.close()
         self.isClosed = True
 
+    # function call when user click on a friend on list friend
     def ConnectFriendtoChat(self, fr_name:str ):
+        if (self.friendList).loc[fr_name, 'socket'] != None:
+            return
         peerAnswer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        (self.friendList).loc[fr_name, 'socketAnswer'] = peerAnswer
+        (self.friendList).loc[fr_name, 'socket'] = peerAnswer
         friendIP = (self.friendList).loc[fr_name, 'IP']
-        ((self.friendList).loc[fr_name, 'socketAnswer']).connect((friendIP, P2P_LISTEN_PORT))
+        ((self.friendList).loc[fr_name, 'socket']).connect((friendIP, P2P_LISTEN_PORT))
     
     def FindFriendbyIP(self, IP: str):
         pass
         (self.friendList).loc[self.friendList["IP"] == IP]
         
 
+
+    #call when send a message to other 
+    def sendMessage(self, name: str, message: str, username: str):
+        sendChatMessage(name, message, self.friendList.loc[username, 'socket'])
     
+    #use for thread
+    def receiveMessage(self, conn, name):
+        while True:
+            if self.isClosed:
+                break
+            msg = receiveChatMessage(conn)
+            # self.friendList.loc[name, 'message'].append(msg) ??????
+            # adding notification when receiving message
+
+            

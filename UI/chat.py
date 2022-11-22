@@ -11,24 +11,27 @@ class ChatPage:
         self.curChoose = StringVar()
 
         # frame side bar
-        self.sidebar_frame = Frame(self.window, width=400, height=self.window.winfo_screenheight(), bg='#ff0000')
+        self.sidebar_frame = Frame(self.window, width=400, height=self.window.winfo_screenheight(), bg='#00ff00')
         self.sidebar_frame.place(x=0, y=0)
 
 
         self.lstfriendOnline = Listbox(self.sidebar_frame, width=400, font=16, fg="green")
         for i,j in data.items():
-            if j != "":
+            if j != None:
                 self.lstfriendOnline.insert(END, i)
         self.lstfriendOnline.bind("<<ListboxSelect>>", self.onSelect)
-        self.lstfriendOnline.pack(ipady=100)
+        self.lstfriendOnline.pack(ipady=50)
 
         self.lstfriendOffline = Listbox(self.sidebar_frame, width=400, font=16, fg="red")
         for i,j in data.items():
-            if j == "":
+            if j == None:
                 self.lstfriendOffline.insert(END, i)
         self.lstfriendOffline.bind("<<ListboxSelect>>", self.onSelect)
-        self.lstfriendOffline.pack(ipady=100)
+        self.lstfriendOffline.pack(ipady=50)
 
+        self.sign_out_button = Button(self.window, text="Sign out", font=("yu gothic ui", 16, "bold"), width=15, bd=0,
+                            bg='#3047ff', cursor='hand2', activebackground='#3047ff', fg='white')
+        self.sign_out_button.place(x=100, y = 725)
         # frame chat 
         self.chat_frame = Frame(self.window, width=self.window.winfo_screenwidth()-400, height=self.window.winfo_screenheight()-100)
         self.chat_frame.place(x=400, y=0)
@@ -56,7 +59,7 @@ class ChatPage:
 
 def page():
     window = Tk()
-    ChatPage(window, {"khanh": "", "nguyen quang khanh": "192.168.0.15", "friend 007": "1111", "friend 001": ""})
+    ChatPage(window, {"khanh": None, "nguyen quang khanh": "192.168.0.15", "friend 007": "1111", "friend 001": None})
     window.mainloop()
 
 

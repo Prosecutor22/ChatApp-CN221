@@ -12,9 +12,7 @@ def sendChatMessage(name: str, data: str, conn):
     conn.send(createChatMessage(name, data))
 
 def createChatMessage(name: str, data: str):
-    if str == "":
-        pass
-    else:
+    if name != "":
         data = ''''''
         with open(str, "r") as f:
             for line in f:
