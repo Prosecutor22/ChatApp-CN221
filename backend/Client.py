@@ -94,6 +94,7 @@ class Client:
 
         # update friend list and  when sign in successfully
         if rcv_msg['flag'] == 1:
+            self.username = username
             users = rcv_msg['data']
             self.friendList = pd.DataFrame({'ip': users.values()}, index=users.keys())
             self.friendList['socket'] = None
@@ -111,7 +112,7 @@ class Client:
 
     def sign_out(self):
         # send sign out message and close connection
-        self.client.send(self.create_auth_message(2, None, None))
+        self.client.send(self.create_auth_message(2, self.username, None))
         self.client.close()
         self.isClosed = True
         for conn in self.conns:

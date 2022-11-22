@@ -83,7 +83,7 @@ class Server:
                     return res
                 else:
                     continue
-        return []
+        return {}
 
     def handle_client(self, conn, addr):
         '''
@@ -176,6 +176,7 @@ class Server:
             # logout
             res = self.setUserStatus(msg["username"], 0) & self.setUserIP(msg["username"], None)
             fri_list = self.get_listfriend(msg["username"])
+            print(fri_list)
             self.sendMessageToAllFriend(fri_list, msg["username"], None)
             self.arrOfSocket[msg["username"]].close()
             return json.dumps({"flag": res, "data": None})
