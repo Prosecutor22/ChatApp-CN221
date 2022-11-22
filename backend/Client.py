@@ -3,9 +3,8 @@ import threading
 from sys import argv
 import json
 import pandas as pd
-from backend.const import *
+from const import *
 from ChatProtocol import *
-
 class Client:
     def __init__(self, ip_address, port, update_status_cb):
         self.callback = update_status_cb
@@ -94,7 +93,7 @@ class Client:
             users = rcv_msg['data']
             self.friendList = pd.DataFrame({'ip': users.values()}, index=users.keys())
             self.friendList['socket'] = None
-            self.friendList['message'] = None
+            self.friendList['message'] = []
             print(f'[INFO] List friends: {self.friendList}')
             # start bind the connect from other peer
             self.P2PListen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -115,29 +114,33 @@ class Client:
     # function call when user click on a friend on list friend
     def ConnectFriendtoChat(self, fr_name:str ):
         if (self.friendList).loc[fr_name, 'socket'] != None:
-            return
+            return self.friendList.loc[fr_name, 'message']
         peerAnswer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         (self.friendList).loc[fr_name, 'socket'] = peerAnswer
         friendIP = (self.friendList).loc[fr_name, 'IP']
         ((self.friendList).loc[fr_name, 'socket']).connect((friendIP, P2P_LISTEN_PORT))
+        return self.friendList.loc[fr_name, 'message']
     
     def FindFriendbyIP(self, IP: str):
-        pass
-        (self.friendList).loc[self.friendList["IP"] == IP]
+        fr_name = (self.friendList)[self.friendList["IP"] == IP]
+        return fr_name.index[0]
         
-
-
     #call when send a message to other 
-    def sendMessage(self, name: str, message: str, username: str):
-        sendChatMessage(name, message, self.friendList.loc[username, 'socket'])
+    def sendMessage(self, filename: str, message: str, username: str):
+        sendChatMessage(filename, message, self.friendList.loc[username, 'socket'])
+        self.friendList.loc[username, 'message'].append({'filename': filename,
+                                                        'data': message,
+                                                        'sender': 0})
     
     #use for thread
     def receiveMessage(self, conn, name):
         while True:
             if self.isClosed:
                 break
-            msg = receiveChatMessage(conn)
-            # self.friendList.loc[name, 'message'].append(msg) ??????
-            # adding notification when receiving message
+            msg = conn.recv(2048).decode(FORMAT)
+            msg = json.loads(msg)
+            msg['sender'] = 1
+            self.friendList.loc[name, 'message'].append(msg)
+            # callback to change message: param (name, msg)
 
             

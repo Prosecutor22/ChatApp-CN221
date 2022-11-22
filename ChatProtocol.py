@@ -19,21 +19,21 @@ def createChatMessage(name: str, data: str):
                 data += line
         name = name.split('\\')[-1]
     message = {
-        'name': name,
+        'filename': name,
         'data': data
     }
     msg = json.dumps(message)
     return msg
 
 # using for receiving only one message per call, input is connection
-#output: {
+# output: {
 #           'name':'Alice_In_Wonderland', 
 #           'data': '''dsddjdnafu afnfiuqe
 #                       fafwefefweeqfefewf'''
 # }
-def receiveChatMessage(conn):
-    msg = conn.recv(2048).decode(FORMAT)
-    msg = json.loads(msg)
-    conn.bind()
-    conn.getsockname()
-    return msg
+
+# def receiveChatMessage(conn, addr):
+#     msg = conn.recv(2048).decode(FORMAT)
+#     msg = json.loads(msg)
+   
+#     return msg

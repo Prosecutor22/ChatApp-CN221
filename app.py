@@ -18,6 +18,9 @@ def handle_sign_in(event):
     else:
         page = ChatPage(window, rcv_msg['data'])
         page.sign_out_button.bind('<Button-1>', handle_sign_out)
+        page.lstfriendOnline.bind("<<ListboxSelect>>", onSelect)
+        page.typing_entry.bind("<Return>", change_message_from_me)
+        page.send_button.bind("<Button-1>", change_message_from_me)
         
 def handle_sign_up(event):
     global page
@@ -49,7 +52,51 @@ def change_to_sign_in(event):
     page.sign_up_button.bind('<Button-1>', change_to_sign_up)
 
 def change_status(username, ip):
-    print(username, ip)
+    # print(username, ip)
+    global page
+    if ip == None:
+        for index, item in enumerate(page.lstfriendOnline.get(0, END)):
+            if item == username:
+                page.lstfriendOnline.delete(index)
+
+                page.lstfriendOffline.insert(END, username)
+                break
+    else:
+        for index, item in enumerate(page.lstfriendOffline.get(0, END)):
+            if item == username:
+                page.lstfriendOffline.delete(index)
+
+                page.lstfriendOnline.insert(END, username)
+                break
+
+def onSelect(event):
+        sender = event.widget
+        idx = sender.curselection()
+        if len(idx) != 0:
+            value = sender.get(idx)
+            page.curChoose.set(value)
+
+            # call start chat
+            messages = client.ConnectFriendtoChat(value)
+            page.message_list.delete(0, END)
+            for message in messages:
+                if message['sender'] == 0:
+                    page.message_list.insert(END, f"{message['data']} [me]".rjust(150))
+                else:
+                    page.message_list.insert(END, f"[{value}] {message['data']}")
+
+def change_message_from_friend(username, message):
+    global page
+    if page.curChoose.get() == username:
+        page.message_list.insert(END, f"[{username}] {message['data']}")
+
+def change_message_from_me():
+    global page
+    message = page.typing_entry.get()
+    page.typing_entry.delete(0, END)
+    client.sendMessage("", message, page.curChoose.get())
+    page.message_list.insert(END, f"{message['data']} [me]".rjust(150))
+    
 
 if __name__ == "__main__":
     client = Client(argv[1], int(argv[2]), change_status)
