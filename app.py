@@ -87,7 +87,7 @@ def onSelect(event):
                 else:
                     page.message_list.insert(END, f"[{value}] {message['data']}")
 
-def change_message_from_friend(event, username, message):
+def change_message_from_friend(username, message):
     global page
     if page.curChoose.get() == username:
         page.message_list.insert(END, f"[{username}] {message['data']}")
@@ -98,11 +98,11 @@ def change_message_from_me(event):
     page.typing_entry.delete(0, END)
     print(page.curChoose.get())
     client.sendMessage("", message, page.curChoose.get())
-    page.message_list.insert(END, f"{message['data']} [me]".rjust(150))
+    page.message_list.insert(END, f"{message} [me]".rjust(150))
     
 
 if __name__ == "__main__":
-    client = Client(argv[1], int(argv[2]), change_status)
+    client = Client(argv[1], int(argv[2]), change_status, change_message_from_friend)
     window = tkinter.Tk()
     page = SigninPage(window)
     page.sign_in_button.bind('<Button-1>', handle_sign_in)

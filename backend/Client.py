@@ -6,8 +6,9 @@ import pandas as pd
 from backend.const import *
 from ChatProtocol import *
 class Client:
-    def __init__(self, ip_address, port, update_status_cb):
+    def __init__(self, ip_address, port, update_status_cb, change_message_cb):
         self.callback = update_status_cb
+        self.change_message_cb = change_message_cb
 
         # get ip of client and create socket to listen from server
         self.hostname = socket.gethostname()
@@ -150,5 +151,6 @@ class Client:
             else:
                 self.friendList.loc[name, 'message'].append(msg)
             # callback to change message: param (name, msg)
+            self.change_message_cb(name, msg)
 
             
