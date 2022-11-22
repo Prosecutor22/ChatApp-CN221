@@ -1,3 +1,4 @@
-thinhlqh minhpp,khanhnq
-minhpp thinhlqh,khanhnq
-khanhnq minhpp,thinhlqh
+thinhlqh minhpp,khanhnq,locht
+minhpp thinhlqh,khanhnq,locht
+khanhnq minhpp,thinhlqh,locht
+locht minhpp
