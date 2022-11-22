@@ -79,6 +79,8 @@ def onSelect(event):
             # call start chat
             messages = client.ConnectFriendtoChat(value)
             page.message_list.delete(0, END)
+            if messages == None:
+                return
             for message in messages:
                 if message['sender'] == 0:
                     page.message_list.insert(END, f"{message['data']} [me]".rjust(150))
