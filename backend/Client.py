@@ -5,6 +5,7 @@ import json
 import pandas as pd
 from backend.const import *
 from ChatProtocol import *
+import sys
 class Client:
     def __init__(self, ip_address, port, update_status_cb, change_message_cb):
         self.callback = update_status_cb
@@ -18,7 +19,7 @@ class Client:
         self.clientListen.bind((self.ip, CLIENT_LISTEN_PORT))
         self.clientListen.listen(1)
         print(f"[START] Client is listening at {self.ip}:{CLIENT_LISTEN_PORT}")
-        thread = threading.Thread(target=self.handle_server, args=())
+        thread = threading.Thread(target=self.handle_server, args=(), name='Thread handle server')
         thread.start()
 
         # create client socket to connect to server
@@ -61,21 +62,28 @@ class Client:
                 self.friendList.loc[f_username, 'socket'] = None
                 print(f'[INFO] List friends: {self.friendList}')
                 self.callback(f_username, f_ip)
+            elif msg['flag'] == 1:
+                break
         print(f"[END CONNECTION] {addr} disconnected.")
         conn.close()
+        sys.exit(0)
 
     def handle_P2P(self):
-        while True:
-            if self.isClosed:
-                break
-            (conn, addr) = self.P2PListen.accept()
-            self.conns.append(conn)
-            print(f"[NEW CONNECTION PEER] {addr} connected.")
-            friend = self.FindFriendbyIP(addr[0])
-            self.ConnectFriendtoChat(friend)
-            thread = threading.Thread(target=self.receiveMessage, args=(conn, friend))
-            thread.start()
+        try:
+            while True:
+                if self.isClosed:
+                    break
+                (conn, addr) = self.P2PListen.accept()
+                self.conns.append(conn)
+                print(f"[NEW CONNECTION PEER] {addr} connected.")
+                friend = self.FindFriendbyIP(addr[0])
+                self.ConnectFriendtoChat(friend)
+                thread = threading.Thread(target=self.receiveMessage, args=(conn, friend))
+                thread.start()
+        except:
+            pass
         print("[END LISTEN FROM OTHER PEER]")
+        sys.exit(0)
     
     def sign_up(self, username, password):
         # send sign up message and return received message to caller
@@ -105,8 +113,9 @@ class Client:
             self.P2PListen.bind((self.ip, P2P_LISTEN_PORT))
             self.P2PListen.listen(100)
             print(f"[START] Peer is listening at {self.ip}:{P2P_LISTEN_PORT}")
-            thread = threading.Thread(target=self.handle_P2P, args=())
+            thread = threading.Thread(target=self.handle_P2P, args=(), name='Thread handle p2p')
             thread.start()
+            
 
         return rcv_msg
 
@@ -115,10 +124,12 @@ class Client:
         self.client.send(self.create_auth_message(2, self.username, None))
         self.client.close()
         self.isClosed = True
+        self.P2PListen.close()
         for conn in self.conns:
             conn.close()
-        for conn in self.friendList['socket'].values():
-            conn.close()
+        for conn in self.friendList['socket'].values:
+            if conn != None:
+                conn.close()
 
     # function call when user click on a friend on list friend
     def ConnectFriendtoChat(self, fr_name:str ):
@@ -149,17 +160,20 @@ class Client:
     
     #use for thread
     def receiveMessage(self, conn, name):
-        while True:
-            if self.isClosed:
-                break
-            msg = conn.recv(2048).decode(FORMAT)
-            msg = json.loads(msg)
-            msg['sender'] = 1
-            if self.friendList.loc[name, 'message'] == None:
-                self.friendList.loc[name, 'message'] = [msg]
-            else:
-                self.friendList.loc[name, 'message'].append(msg)
-            # callback to change message: param (name, msg)
-            self.change_message_cb(name, msg)
-
-            
+        try:
+            while True:
+                if self.isClosed:
+                    break
+                msg = conn.recv(2048).decode(FORMAT)
+                msg = json.loads(msg)
+                msg['sender'] = 1
+                if self.friendList.loc[name, 'message'] == None:
+                    self.friendList.loc[name, 'message'] = [msg]
+                else:
+                    self.friendList.loc[name, 'message'].append(msg)
+                # callback to change message: param (name, msg)
+                self.change_message_cb(name, msg)
+        except:
+            pass
+        sys.exit(0)
+ 

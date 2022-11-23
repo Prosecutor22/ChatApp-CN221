@@ -178,6 +178,7 @@ class Server:
             fri_list = self.get_listfriend(msg["username"])
             print(fri_list)
             self.sendMessageToAllFriend(fri_list, msg["username"], None)
+            self.arrOfSocket[msg["username"]].send(json.dumps({"flag": 1, "data": None}).encode())
             self.arrOfSocket[msg["username"]].close()
             return json.dumps({"flag": res, "data": None})
 

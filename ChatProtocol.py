@@ -17,7 +17,7 @@ def createChatMessage(name: str, data: str):
         with open(str, "r") as f:
             for line in f:
                 data += line
-        name = name.split('\\')[-1]
+        name = name.split('/')[-1]
     message = {
         'filename': name,
         'data': data

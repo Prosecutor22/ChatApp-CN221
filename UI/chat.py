@@ -9,7 +9,9 @@ class ChatPage:
         self.window.state('zoomed')
         self.window.title('Chat Page')
         self.curChoose = StringVar()
-
+        for i in self.window.winfo_children():
+            i.destroy()
+    
         # frame side bar
         self.sidebar_frame = Frame(self.window, width=400, height=self.window.winfo_screenheight(), bg='#00ff00')
         self.sidebar_frame.place(x=0, y=0)
@@ -28,7 +30,7 @@ class ChatPage:
         self.lstfriendOffline.pack(ipady=50)
 
         self.sign_out_button = Button(self.window, text="Sign out", font=("yu gothic ui", 16, "bold"), width=15, bd=0,
-                            bg='#3047ff', cursor='hand2', activebackground='#3047ff', fg='white', command=window.destroy)
+                            bg='#3047ff', cursor='hand2', activebackground='#3047ff', fg='white')
         self.sign_out_button.place(x=100, y = 725)
         # frame chat 
         self.chat_frame = Frame(self.window, width=self.window.winfo_screenwidth()-400, height=self.window.winfo_screenheight()-100)
@@ -62,6 +64,10 @@ class ChatPage:
         self.send_button = Button(self.typing_frame, text="Send", font=("yu gothic ui", 16, "bold"), width=15, bd=0,
                             bg='#3047ff', cursor='hand2', activebackground='#3047ff', fg='white')
         self.send_button.place(x=760, y = 20)
+
+        self.file_button = Button(self.typing_frame, text="Send File", font=("yu gothic ui", 16, "bold"), width=15, bd=0,
+                            bg='#3047ff', cursor='hand2', activebackground='#3047ff', fg='white')
+        self.file_button.place(x=920, y = 20)
 
 def page():
     window = Tk()

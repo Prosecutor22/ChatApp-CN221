@@ -1,11 +1,14 @@
 import os
 from sys import argv
+import sys
 import tkinter
+from tkinter import filedialog
 from backend.Client import Client
 from UI.signin import SigninPage
 from UI.signup import SignupPage
 from UI.chat import ChatPage
 from tkinter import *
+import threading
 
 def handle_sign_in(event):
     global page
@@ -21,6 +24,7 @@ def handle_sign_in(event):
         page.lstfriendOnline.bind("<<ListboxSelect>>", onSelect)
         page.typing_entry.bind("<Return>", change_message_from_me)
         page.send_button.bind("<Button-1>", change_message_from_me)
+        page.file_button.bind("<Button-1>", handle_file_select)
         
 def handle_sign_up(event):
     global page
@@ -34,10 +38,25 @@ def handle_sign_up(event):
         page.message.config(text="Sign up successfully", fg="green")
 
 def handle_sign_out(event):
-    global page
+    global page, window
     client.sign_out()
     print('[SIGN OUT]')
-    page = SigninPage(window)
+    window.destroy()
+    # page = SigninPage(window)
+    window.quit()
+
+def handle_file_select(event):
+    filetypes = (
+        ('text files', '*.txt'),
+        ('All files', '*.*')
+    )
+
+    filename = filedialog.askopenfilename(
+        title='Open a file',
+        initialdir='/',
+        filetypes=filetypes)
+
+    print(filename)
 
 def change_to_sign_up(event):
     global page 
@@ -97,9 +116,10 @@ def change_message_from_me(event):
     global page
     message = page.typing_entry.get()
     page.typing_entry.delete(0, END)
-    print(page.curChoose.get())
-    client.sendMessage("", message, page.curChoose.get())
-    page.message_list.insert(END, f"{message} [me]".rjust(150))
+    if page.curChoose.get() != '':
+        print(page.curChoose.get())
+        client.sendMessage("", message, page.curChoose.get())
+        page.message_list.insert(END, f"{message} [me]".rjust(150))
     
 
 if __name__ == "__main__":
@@ -109,4 +129,8 @@ if __name__ == "__main__":
     page.sign_in_button.bind('<Button-1>', handle_sign_in)
     page.sign_up_button.bind('<Button-1>', change_to_sign_up)
     window.mainloop()
+    print("close tkinter")
+    for i in threading.enumerate():
+        print(i.getName())
+
 
