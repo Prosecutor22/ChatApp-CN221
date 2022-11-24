@@ -129,7 +129,8 @@ class Server:
             msg = {"flag": 2, "data": {userNameChangeState: IPChangeState}}
             msg = json.dumps(msg)
             if name in self.arrOfSocket.keys():
-                self.arrOfSocket[name].send(msg.encode())
+                if self.arrOfSocket[name] is not None:
+                    self.arrOfSocket[name].send(msg.encode())
             
 
     def processMessage(self, msg, addr):
@@ -180,6 +181,7 @@ class Server:
             self.sendMessageToAllFriend(fri_list, msg["username"], None)
             self.arrOfSocket[msg["username"]].send(json.dumps({"flag": 1, "data": None}).encode())
             self.arrOfSocket[msg["username"]].close()
+            self.arrOfSocket[msg["username"]] = None
             return json.dumps({"flag": res, "data": None})
 
 if __name__ == "__main__":

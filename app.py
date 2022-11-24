@@ -9,6 +9,7 @@ from UI.signup import SignupPage
 from UI.chat import ChatPage
 from tkinter import *
 import threading
+from datetime import datetime
 
 def handle_sign_in(event):
     global page
@@ -56,7 +57,11 @@ def handle_file_select(event):
         initialdir='/',
         filetypes=filetypes)
 
-    print(filename)
+    if page.curChoose.get() != '':
+        print(page.curChoose.get())
+        client.sendMessage(filename, "", page.curChoose.get())
+        time = datetime.now().strftime("%H:%M:%S")
+        page.message_list.insert(END, f"[me - {time} - {filename}]")
 
 def change_to_sign_up(event):
     global page 
@@ -102,15 +107,23 @@ def onSelect(event):
             if messages == None:
                 return
             for message in messages:
+                time = datetime.now().strftime("%H:%M:%S")
                 if message['sender'] == 0:
-                    page.message_list.insert(END, f"{message['data']} [me]".rjust(150))
+                    if message['filename'] == '':
+                        page.message_list.insert(END, f"[me - {time}] {message['data']}")
+                    else:
+                        page.message_list.insert(END, f"[me - {time} - {message['filename']}]")
                 else:
-                    page.message_list.insert(END, f"[{value}] {message['data']}")
+                    if message['filename'] == '':
+                        page.message_list.insert(END, f"[{value} - {time}] {message['data']}")
+                    else:
+                        page.message_list.insert(END, f"[{value} - {time} - {message['filename']}]")
 
 def change_message_from_friend(username, message):
     global page
     if page.curChoose.get() == username:
-        page.message_list.insert(END, f"[{username}] {message['data']}")
+        time = datetime.now().strftime("%H:%M:%S")
+        page.message_list.insert(END, f"[{username} - {time}] {message['data']}")
 
 def change_message_from_me(event):
     global page
@@ -119,7 +132,8 @@ def change_message_from_me(event):
     if page.curChoose.get() != '':
         print(page.curChoose.get())
         client.sendMessage("", message, page.curChoose.get())
-        page.message_list.insert(END, f"{message} [me]".rjust(150))
+        time = datetime.now().strftime("%H:%M:%S")
+        page.message_list.insert(END, f"[me - {time}] {message}")
     
 
 if __name__ == "__main__":
@@ -132,5 +146,3 @@ if __name__ == "__main__":
     print("close tkinter")
     for i in threading.enumerate():
         print(i.getName())
-
-
