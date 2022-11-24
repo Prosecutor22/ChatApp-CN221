@@ -6,6 +6,7 @@ import pandas as pd
 from backend.const import *
 from ChatProtocol import *
 import sys
+import os
 class Client:
     def __init__(self, ip_address, port, update_status_cb, change_message_cb):
         self.callback = update_status_cb
