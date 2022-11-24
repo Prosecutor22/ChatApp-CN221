@@ -14,7 +14,7 @@ def sendChatMessage(name: str, data: str, conn):
 def createChatMessage(name: str, data: str):
     if name != "":
         data = ''''''
-        with open(str, "r") as f:
+        with open(name, "r") as f:
             for line in f:
                 data += line
         name = name.split('/')[-1]

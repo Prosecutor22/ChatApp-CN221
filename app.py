@@ -60,8 +60,7 @@ def handle_file_select(event):
     if page.curChoose.get() != '':
         print(page.curChoose.get())
         client.sendMessage(filename, "", page.curChoose.get())
-        time = datetime.now().strftime("%H:%M:%S")
-        page.message_list.insert(END, f"[me - {time} - {filename}]")
+        page.message_list.insert(END, f"[me - {filename}]")
 
 def change_to_sign_up(event):
     global page 
@@ -107,23 +106,21 @@ def onSelect(event):
             if messages == None:
                 return
             for message in messages:
-                time = datetime.now().strftime("%H:%M:%S")
                 if message['sender'] == 0:
                     if message['filename'] == '':
-                        page.message_list.insert(END, f"[me - {time}] {message['data']}")
+                        page.message_list.insert(END, f"[me] {message['data']}")
                     else:
-                        page.message_list.insert(END, f"[me - {time} - {message['filename']}]")
+                        page.message_list.insert(END, f"[me - {message['filename']}]")
                 else:
                     if message['filename'] == '':
-                        page.message_list.insert(END, f"[{value} - {time}] {message['data']}")
+                        page.message_list.insert(END, f"[{value}] {message['data']}")
                     else:
-                        page.message_list.insert(END, f"[{value} - {time} - {message['filename']}]")
+                        page.message_list.insert(END, f"[{value} - {message['filename']}]")
 
 def change_message_from_friend(username, message):
     global page
     if page.curChoose.get() == username:
-        time = datetime.now().strftime("%H:%M:%S")
-        page.message_list.insert(END, f"[{username} - {time}] {message['data']}")
+        page.message_list.insert(END, f"[{username}] {message['data']}")
 
 def change_message_from_me(event):
     global page
@@ -132,8 +129,7 @@ def change_message_from_me(event):
     if page.curChoose.get() != '':
         print(page.curChoose.get())
         client.sendMessage("", message, page.curChoose.get())
-        time = datetime.now().strftime("%H:%M:%S")
-        page.message_list.insert(END, f"[me - {time}] {message}")
+        page.message_list.insert(END, f"[me] {message}")
     
 
 if __name__ == "__main__":
