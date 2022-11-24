@@ -178,10 +178,10 @@ class Server:
             res = self.setUserStatus(msg["username"], 0) & self.setUserIP(msg["username"], None)
             fri_list = self.get_listfriend(msg["username"])
             print(fri_list)
-            self.sendMessageToAllFriend(fri_list, msg["username"], None)
             self.arrOfSocket[msg["username"]].send(json.dumps({"flag": 1, "data": None}).encode())
             self.arrOfSocket[msg["username"]].close()
             self.arrOfSocket[msg["username"]] = None
+            self.sendMessageToAllFriend(fri_list, msg["username"], None)
             return json.dumps({"flag": res, "data": None})
 
 if __name__ == "__main__":
