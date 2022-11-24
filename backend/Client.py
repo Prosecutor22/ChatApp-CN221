@@ -149,6 +149,7 @@ class Client:
     def sendMessage(self, filename: str, message: str, username: str):
         print(username)
         sendChatMessage(filename, message, self.friendList.loc[username, 'socket'])
+        filename = filename.split('/')[-1]
         if self.friendList.loc[username, 'message'] == None:
             self.friendList.loc[username, 'message'] = [{'filename': filename,
                                                         'data': message,

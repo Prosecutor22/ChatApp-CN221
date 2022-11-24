@@ -120,7 +120,10 @@ def onSelect(event):
 def change_message_from_friend(username, message):
     global page
     if page.curChoose.get() == username:
-        page.message_list.insert(END, f"[{username}] {message['data']}")
+        if message['filename'] == '':
+            page.message_list.insert(END, f"[{username}] {message['data']}")
+        else:
+            page.message_list.insert(END, f"[{username} - {message['filename']}]")
 
 def change_message_from_me(event):
     global page
