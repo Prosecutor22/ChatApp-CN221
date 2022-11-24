@@ -174,6 +174,10 @@ class Client:
                     self.friendList.loc[name, 'message'].append(msg)
 
                 if msg["filename"] != '':
+                    try:
+                        os.mkdir('download')
+                    except FileExistsError:
+                        pass
                     with open(f"download/{msg['filename']}", "w") as file_down:
                         file_down.write(msg["data"])
                 # callback to change message: param (name, msg)
