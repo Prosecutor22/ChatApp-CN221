@@ -172,6 +172,10 @@ class Client:
                     self.friendList.loc[name, 'message'] = [msg]
                 else:
                     self.friendList.loc[name, 'message'].append(msg)
+
+                if msg["filename"] != '':
+                    with open(f"download/{msg['filename']}", "w") as file_down:
+                        file_down.write(msg["data"])
                 # callback to change message: param (name, msg)
                 self.change_message_cb(name, msg)
         except:

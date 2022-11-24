@@ -60,7 +60,7 @@ def handle_file_select(event):
     if page.curChoose.get() != '':
         print(page.curChoose.get())
         client.sendMessage(filename, "", page.curChoose.get())
-        page.message_list.insert(END, f"[me - {filename}]")
+        page.message_list.insert(END, f"[me - {filename.split('/')[-1]}]")
 
 def change_to_sign_up(event):
     global page 
