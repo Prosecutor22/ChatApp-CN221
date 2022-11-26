@@ -7,6 +7,14 @@ from backend.const import *
 from ChatProtocol import *
 import sys
 import os
+import hashlib
+
+def HashPassWord(password: str):
+    salt = "KTML"
+    key = password + salt
+    hashed = hashlib.md5(key.encode('utf-8')).hexdigest()
+    return hashed
+
 class Client:
     def __init__(self, ip_address, port, update_status_cb, change_message_cb):
         self.callback = update_status_cb
@@ -88,6 +96,7 @@ class Client:
     
     def sign_up(self, username, password):
         # send sign up message and return received message to caller
+        password = HashPassWord(password)
         msg = self.create_auth_message(0, username, password)
         self.client.send(msg)
         rcv_msg = self.client.recv(2048).decode(FORMAT)
@@ -96,6 +105,7 @@ class Client:
     
     def sign_in(self, username, password):
         # send sign in message
+        password = HashPassWord(password)
         msg = self.create_auth_message(1, username, password)
         self.client.send(msg)
         rcv_msg = self.client.recv(2048).decode(FORMAT)
