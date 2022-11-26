@@ -4,7 +4,6 @@ from sys import argv
 import json
 import pandas as pd
 from backend.const import *
-from ChatProtocol import *
 import sys
 import os
 import hashlib
@@ -159,7 +158,7 @@ class Client:
     #call when send a message to other 
     def sendMessage(self, filename: str, message: str, username: str):
         print(username)
-        sendChatMessage(filename, message, self.friendList.loc[username, 'socket'])
+        self.sendChatMessage(filename, message, self.friendList.loc[username, 'socket'])
         filename = filename.split('/')[-1]
         if self.friendList.loc[username, 'message'] == None:
             self.friendList.loc[username, 'message'] = [{'filename': filename,
@@ -170,6 +169,23 @@ class Client:
                                                         'data': message,
                                                         'sender': 0})
     
+    def sendChatMessage(self, name: str, data: str, conn):
+        conn.send(self.createChatMessage(name, data))
+
+    def createChatMessage(self, name: str, data: str):
+        if name != "":
+            data = ''''''
+            with open(name, "r") as f:
+                for line in f:
+                    data += line
+            name = name.split('/')[-1]
+        message = {
+            'filename': name,
+            'data': data
+        }
+        msg = json.dumps(message).encode(FORMAT)
+        return msg
+
     #use for thread
     def receiveMessage(self, conn, name):
         try:
