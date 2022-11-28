@@ -53,11 +53,6 @@ class Server:
         return 1  
       
     def authenticate(self, username: str, password: str) -> int:
-        '''
-        return: int
-        0 -> login fail
-        1 -> login success   data = {'ban1':1,'ban2':0}
-        '''
         user = self.searchUserName(username)
         if user == None or password != user[1]:
             return 0
@@ -65,9 +60,6 @@ class Server:
         return 1
     
     def get_listfriend(self, username):
-        '''
-        return: {'ban1': 1, 'ban2': 0} 
-        '''
         with open(self.filenameListFriend, "r") as f:
             for line in f:
                 tmp = line.split()
@@ -82,9 +74,6 @@ class Server:
         return {}
 
     def handle_client(self, conn, addr):
-        '''
-        handle client in a separate thread
-        '''
         print(f"[NEW CONNECTION] {addr} connected.")
         conn.send(b'[INFO] Connected')
         # cho nay co connect toi client lun ko
@@ -104,16 +93,6 @@ class Server:
             (conn, addr) = self.server.accept()
             thread = threading.Thread(target=self.handle_client, args=(conn,addr))
             thread.start()
-    
-    # def sendMessageToClient(self, username: str, destinationAddr):
-    #     '''
-    #     username: name of client that will be sent
-    #     destinationAddr: IP of client that will be sent
-    #     '''
-    #     listFr = self.get_listfriend(username)
-    #     message = {"flag": 2,"data": listFr}
-    #     msg = json.dumps(str(message))
-    #     self.arrOfSocket[username].send(msg)
 
     def sendMessageToAllFriend(self, fri_list, userNameChangeState, IPChangeState):
         '''
@@ -121,7 +100,6 @@ class Server:
         send: {usrname: IP}
         '''
         for name, IP in fri_list.items():
-            # self.sendMessageToClient(name, IP)
             msg = {"flag": 2, "data": {userNameChangeState: IPChangeState}}
             msg = json.dumps(msg)
             if name in self.arrOfSocket.keys():
@@ -130,10 +108,6 @@ class Server:
             
 
     def processMessage(self, msg, addr):
-        '''
-        msg: object(type, username, password)
-        return: str_en(flag, data)
-        '''
         if msg["type"] == 0: #sign up
             res = self.addNewUser(msg["username"], msg["password"])
             return json.dumps({"flag": res, "data": None})
@@ -143,26 +117,7 @@ class Server:
                 return json.dumps(str({"flag": 0, "data": None}))
             else:
                 # create socket for communication
-                # self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                # self.client.connect((ip_address, port))
-                # self.msg = self.client.recv(2048).decode()
-                # print(self.msg)
-                # self.isClosed = False
-            
-                # # get ip of client and create socket to listen from server
-                # self.hostname = socket.gethostname()
-                # self.ip = socket.gethostbyname(self.hostname)
-                # self.clientListen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                # self.clientListen.bind((self.ip, CLIENT_LISTEN_PORT))
-                # self.clientListen.listen(1)
-                # print(f"[START] Client is listening at {self.ip}:{CLIENT_LISTEN_PORT}")
-                
-                # self.df.loc[msg["username"], 'listenPort'] = msg['port']
-                
                 fri_list = self.get_listfriend(msg["username"])
-                
-                # self.setUserStatus(msg["username"], 1)
-                # print(addr[0])
                 self.setUserIP(msg["username"], addr[0])
                 self.arrOfSocket[msg["username"]] = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.arrOfSocket[msg["username"]].connect((addr[0], CLIENT_LISTEN_PORT))
@@ -173,7 +128,6 @@ class Server:
             # logout
             res = self.setUserIP(msg["username"], None)
             fri_list = self.get_listfriend(msg["username"])
-            #print(fri_list)
             self.arrOfSocket[msg["username"]].send(json.dumps({"flag": 1, "data": None}).encode())
             self.arrOfSocket[msg["username"]].close()
             self.arrOfSocket[msg["username"]] = None

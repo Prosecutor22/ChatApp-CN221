@@ -23,7 +23,6 @@ class Client:
         self.hostname = socket.gethostname()
         self.ip = socket.gethostbyname(self.hostname)
         self.clientListen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # print(self.ip)
         self.clientListen.bind((self.ip, CLIENT_LISTEN_PORT))
         self.clientListen.listen(1)
         print(f"[START] Client is listening at {self.ip}:{CLIENT_LISTEN_PORT}")
@@ -34,7 +33,6 @@ class Client:
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect((ip_address, port))
         self.msg = self.client.recv(2048).decode()
-        #print(self.msg)
         self.isClosed = False
         self.conns = []
     
@@ -61,8 +59,7 @@ class Client:
             msg = conn.recv(2048).decode(FORMAT)
             msg = json.loads(msg)
             print(f'[MESSAGE FROM {addr}] {msg}')
-            #print(msg)
-            # update listFriend and call callback when receive update message from server
+            #update listFriend and call callback when receive update message from server
             if msg['flag'] == 2:
                 f_username = list(msg['data'].keys())[0]
                 f_ip = list(msg['data'].values())[0]
@@ -103,14 +100,14 @@ class Client:
         return rcv_msg
     
     def sign_in(self, username, password):
-        # send sign in message
+        #send sign in message
         password = HashPassWord(password)
         msg = self.create_auth_message(1, username, password)
         self.client.send(msg)
         rcv_msg = self.client.recv(2048).decode(FORMAT)
         rcv_msg = eval(json.loads(rcv_msg))
 
-        # update friend list and  when sign in successfully
+        #update friend list and  when sign in successfully
         if rcv_msg['flag'] == 1:
             self.username = username
             users = rcv_msg['data']
@@ -118,7 +115,7 @@ class Client:
             self.friendList['socket'] = None
             self.friendList['message'] = None
             print(f'[INFO] List friends: {self.friendList}')
-            # start bind the connect from other peer
+            #start bind the connect from other peer
             self.P2PListen = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.P2PListen.bind((self.ip, P2P_LISTEN_PORT))
             self.P2PListen.listen(100)
@@ -130,7 +127,7 @@ class Client:
         return rcv_msg
 
     def sign_out(self):
-        # send sign out message and close connection
+        #send sign out message and close connection
         self.client.send(self.create_auth_message(2, self.username, None))
         self.client.close()
         self.isClosed = True
@@ -141,7 +138,7 @@ class Client:
             if conn != None:
                 conn.close()
 
-    # function call when user click on a friend on list friend
+    #function call when user click on a friend on list friend
     def ConnectFriendtoChat(self, fr_name: str):
         if (self.friendList).loc[fr_name, 'socket'] != None:
             return self.friendList.loc[fr_name, 'message']
@@ -157,7 +154,6 @@ class Client:
         
     #call when send a message to other 
     def sendMessage(self, filename: str, message: str, username: str):
-        #print(username)
         self.sendChatMessage(filename, message, self.friendList.loc[username, 'socket'])
         filename = filename.split('/')[-1]
         if self.friendList.loc[username, 'message'] == None:

@@ -146,12 +146,3 @@ class SignupPage:
         self.show_button.place(x=860, y=420)
         self.password_entry.config(show='*')
 
-
-def page():
-    window = Tk()
-    SignupPage(window)
-    window.mainloop()
-
-
-if __name__ == '__main__':
-    page()

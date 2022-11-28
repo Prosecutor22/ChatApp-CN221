@@ -148,13 +148,3 @@ class SigninPage:
                                   , borderwidth=0, background="white", cursor="hand2")
         self.show_button.place(x=860, y=420)
         self.password_entry.config(show='*')
-
-
-def page():
-    window = Tk()
-    SigninPage(window)
-    window.mainloop()
-
-
-# if __name__ == '__main__':
-#     page()

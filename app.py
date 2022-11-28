@@ -13,13 +13,11 @@ from datetime import datetime
 
 class ClientUI():
     def __init__(self, ip, port):
-        print("oke")
         self.client = Client(ip, port, self.change_status, self.change_message_from_friend)
         self.window = tkinter.Tk()
         self.page = SigninPage(self.window)
         self.page.sign_in_button.bind('<Button-1>', self.handle_sign_in)
         self.page.sign_up_button.bind('<Button-1>', self.change_to_sign_up)
-        print("It oke")
     
     def run(self):
         self.window.mainloop()
@@ -28,11 +26,10 @@ class ClientUI():
         username = self.page.username_entry.get()
         password = self.page.password_entry.get()
         rcv_msg = self.client.sign_in(username, password)
-        #print(rcv_msg)
         if rcv_msg['flag'] == 0:
             self.page.message.config(text="Incorrect username or password", fg="red")
         else:
-            self.page = ChatPage(self.window, rcv_msg['data'])
+            self.page = ChatPage(self.window, rcv_msg['data'], self.client.sign_out)
             self.page.sign_out_button.bind('<Button-1>', self.handle_sign_out)
             self.page.lstfriendOnline.bind("<<ListboxSelect>>", self.onSelect)
             self.page.typing_entry.bind("<Return>", self.change_message_from_me)
@@ -43,7 +40,6 @@ class ClientUI():
         username = self.page.username_entry.get()
         password = self.page.password_entry.get()
         rcv_msg = self.client.sign_up(username, password)
-        #print(rcv_msg)
         if rcv_msg['flag'] == 0:
             self.page.message.config(text="Username already exists", fg="red")
         else:
@@ -53,7 +49,6 @@ class ClientUI():
         self.client.sign_out()
         print('[SIGN OUT]')
         self.window.destroy()
-        # page = SigninPage(window)
         self.window.quit()
 
     def handle_file_select(self, event):
@@ -68,9 +63,8 @@ class ClientUI():
             filetypes=filetypes)
 
         if self.page.curChoose.get() != '':
-            #print(page.curChoose.get())
             self.client.sendMessage(filename, "", self.page.curChoose.get())
-            self.page.message_list.insert(END, f"[me - {filename.split('/')[-1]}]")
+            self.page.message_list.insert(END, f"[me - {filename.split('/')[-1]}]".rjust(120))
 
     def change_to_sign_up(self, event):
         self.page = SignupPage(self.window)
@@ -83,8 +77,6 @@ class ClientUI():
         self.page.sign_up_button.bind('<Button-1>', self.change_to_sign_up)
 
     def change_status(self, username, ip):
-        # print(username, ip)
-        #print(ip)
         if ip == None:
             for index, item in enumerate(self.page.lstfriendOnline.get(0, END)):
                 if item == username:
@@ -115,9 +107,9 @@ class ClientUI():
                 for message in messages:
                     if message['sender'] == 0:
                         if message['filename'] == '':
-                            self.page.message_list.insert(END, f"[me] {message['data']}")
+                            self.page.message_list.insert(END, f"[me] {message['data']}".rjust(120))
                         else:
-                            self.page.message_list.insert(END, f"[me - {message['filename']}]")
+                            self.page.message_list.insert(END, f"[me - {message['filename']}]".rjust(120))
                     else:
                         if message['filename'] == '':
                             self.page.message_list.insert(END, f"[{value}] {message['data']}")
@@ -134,22 +126,11 @@ class ClientUI():
     def change_message_from_me(self, event):
         message = self.page.typing_entry.get()
         self.page.typing_entry.delete(0, END)
-        if self.page.curChoose.get() != '':
-            #print(page.curChoose.get())
+        if self.page.curChoose.get() != '' and message.strip != '':
             self.client.sendMessage("", message, self.page.curChoose.get())
-            self.page.message_list.insert(END, f"[me] {message}")
+            self.page.message_list.insert(END, f"[me] {message}".rjust(120))
 
 
-# if __name__ == "__main__":
-#     client = Client(argv[1], int(argv[2]), change_status, change_message_from_friend)
-#     window = tkinter.Tk()
-#     page = SigninPage(window)
-#     page.sign_in_button.bind('<Button-1>', handle_sign_in)
-#     page.sign_up_button.bind('<Button-1>', change_to_sign_up)
-#     window.mainloop()
-#     # print("close tkinter")
-#     # for i in threading.enumerate():
-#     #     print(i.getName())
 if __name__ == "__main__":
     clientUI = ClientUI(argv[1], int(argv[2]))
     clientUI.run()
