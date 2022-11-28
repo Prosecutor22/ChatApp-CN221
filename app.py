@@ -64,7 +64,7 @@ class ClientUI():
 
         if self.page.curChoose.get() != '':
             self.client.sendMessage(filename, "", self.page.curChoose.get())
-            self.page.message_list.insert(END, f"[me - {filename.split('/')[-1]}]".rjust(120))
+            self.page.message_list.insert(END, f"[me - {filename.split('/')[-1]}]")
 
     def change_to_sign_up(self, event):
         self.page = SignupPage(self.window)
@@ -107,9 +107,9 @@ class ClientUI():
                 for message in messages:
                     if message['sender'] == 0:
                         if message['filename'] == '':
-                            self.page.message_list.insert(END, f"[me] {message['data']}".rjust(120))
+                            self.page.message_list.insert(END, f"[me] {message['data']}")
                         else:
-                            self.page.message_list.insert(END, f"[me - {message['filename']}]".rjust(120))
+                            self.page.message_list.insert(END, f"[me - {message['filename']}]")
                     else:
                         if message['filename'] == '':
                             self.page.message_list.insert(END, f"[{value}] {message['data']}")
@@ -126,9 +126,9 @@ class ClientUI():
     def change_message_from_me(self, event):
         message = self.page.typing_entry.get()
         self.page.typing_entry.delete(0, END)
-        if self.page.curChoose.get() != '' and message.strip != '':
+        if self.page.curChoose.get() != '' and message.strip() != '':
             self.client.sendMessage("", message, self.page.curChoose.get())
-            self.page.message_list.insert(END, f"[me] {message}".rjust(120))
+            self.page.message_list.insert(END, f"[me] {message}")
 
 
 if __name__ == "__main__":
