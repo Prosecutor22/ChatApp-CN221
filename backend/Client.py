@@ -34,7 +34,7 @@ class Client:
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect((ip_address, port))
         self.msg = self.client.recv(2048).decode()
-        print(self.msg)
+        #print(self.msg)
         self.isClosed = False
         self.conns = []
     
@@ -61,7 +61,7 @@ class Client:
             msg = conn.recv(2048).decode(FORMAT)
             msg = json.loads(msg)
             print(f'[MESSAGE FROM {addr}] {msg}')
-            print(msg)
+            #print(msg)
             # update listFriend and call callback when receive update message from server
             if msg['flag'] == 2:
                 f_username = list(msg['data'].keys())[0]
@@ -142,7 +142,7 @@ class Client:
                 conn.close()
 
     # function call when user click on a friend on list friend
-    def ConnectFriendtoChat(self, fr_name:str ):
+    def ConnectFriendtoChat(self, fr_name: str):
         if (self.friendList).loc[fr_name, 'socket'] != None:
             return self.friendList.loc[fr_name, 'message']
         peerAnswer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -157,7 +157,7 @@ class Client:
         
     #call when send a message to other 
     def sendMessage(self, filename: str, message: str, username: str):
-        print(username)
+        #print(username)
         self.sendChatMessage(filename, message, self.friendList.loc[username, 'socket'])
         filename = filename.split('/')[-1]
         if self.friendList.loc[username, 'message'] == None:

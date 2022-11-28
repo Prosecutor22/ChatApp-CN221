@@ -19,10 +19,6 @@ class Server:
         self.df = pd.read_csv(self.fileNameClient, index_col='username')
         self.df['IP'] = None
         self.arrOfSocket = {}
-
-    def setUserStatus(self, username: str, status: int) -> int:
-        self.df.loc[username, 'Status'] = status
-        return 1
     
     def setUserIP(self, username: str, IP: str) -> int:
         self.df.loc[username, 'IP'] = IP
@@ -30,7 +26,7 @@ class Server:
 
     def searchUserName(self, username: str) -> list:
         '''
-        return: list[username, password, IP, status]
+        return: list[username, password, IP]
         '''
         if username in self.df.index:
             res = [username]
@@ -175,9 +171,9 @@ class Server:
 
         else: 
             # logout
-            res = self.setUserStatus(msg["username"], 0) & self.setUserIP(msg["username"], None)
+            res = self.setUserIP(msg["username"], None)
             fri_list = self.get_listfriend(msg["username"])
-            print(fri_list)
+            #print(fri_list)
             self.arrOfSocket[msg["username"]].send(json.dumps({"flag": 1, "data": None}).encode())
             self.arrOfSocket[msg["username"]].close()
             self.arrOfSocket[msg["username"]] = None
