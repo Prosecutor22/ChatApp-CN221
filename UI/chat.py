@@ -61,12 +61,3 @@ class ChatPage:
         print('[SIGN OUT]')
         self.window.destroy()
         self.window.quit()
-
-def page():
-    window = Tk()
-    ChatPage(window, {"khanh": None, "nguyen quang khanh": "192.168.0.15", "friend 007": "1111", "friend 001": None})
-    window.mainloop()
-
-
-if __name__ == '__main__':
-    page()
